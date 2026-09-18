@@ -1,4 +1,5 @@
 import { BookOpen, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { HanoiLogo } from "./HanoiLogo";
 
 interface HeaderProps {
   isMuted: boolean;
@@ -16,12 +17,7 @@ export function Header({
   return (
     <header className="mb-4 flex flex-col gap-4 border-b border-white/[0.07] pb-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3.5">
-        <div
-          aria-hidden="true"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-b from-[#2a2e39] to-[#161820] text-amber-400 font-mono font-bold text-lg border border-white/[0.1] shadow-md"
-        >
-          H
-        </div>
+        <HanoiLogo className="h-10 w-10 shadow-md" size={40} />
         <div>
           <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
             Tower of Hanoi
