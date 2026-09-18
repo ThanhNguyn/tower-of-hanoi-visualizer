@@ -2,13 +2,15 @@ export type Rod = "A" | "B" | "C";
 
 export type AppMode = "play" | "solve" | "learn";
 
+export type AlgorithmType = "recursive" | "iterative" | "binary";
+
 export interface HanoiMove {
   id: number;
   disk: number;
   from: Rod;
   to: Rod;
   moveIndex: number;
-  callId: string;
+  callId?: string;
   explanation: string;
 }
 

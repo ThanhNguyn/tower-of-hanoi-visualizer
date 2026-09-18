@@ -1,10 +1,12 @@
-import { GraduationCap, PlayCircle, RotateCcw, Swords } from "lucide-react";
-
-export type AppMode = "play" | "solve" | "learn";
+import { BookOpen, GraduationCap, PlayCircle, RotateCcw, Swords, Volume2, VolumeX } from "lucide-react";
+import type { AppMode } from "../types/hanoi";
 
 interface HeaderProps {
   mode: AppMode;
+  isMuted: boolean;
   onModeChange: (mode: AppMode) => void;
+  onToggleSound: () => void;
+  onOpenRules: () => void;
   onReset: () => void;
 }
 
@@ -14,31 +16,46 @@ const modes: Array<{
   description: string;
   icon: typeof Swords;
 }> = [
-  { id: "play", label: "Play", description: "Solve it yourself", icon: Swords },
-  { id: "solve", label: "Solve", description: "Run the recursion", icon: PlayCircle },
-  { id: "learn", label: "Learn", description: "Inspect the algorithm", icon: GraduationCap }
+  { id: "play", label: "Chơi đố", description: "Tự tay giải đố Tháp Hà Nội", icon: Swords },
+  { id: "solve", label: "Mô phỏng", description: "Xem thuật toán tự động giải từng bước", icon: PlayCircle },
+  { id: "learn", label: "Thuật toán", description: "Khám phá bản chất đệ quy & độ phức tạp", icon: GraduationCap }
 ];
 
-export function Header({ mode, onModeChange, onReset }: HeaderProps) {
+export function Header({
+  mode,
+  isMuted,
+  onModeChange,
+  onToggleSound,
+  onOpenRules,
+  onReset
+}: HeaderProps) {
   return (
     <header className="mb-5 flex flex-col gap-4 border-b border-white/[0.08] pb-5 lg:mb-7 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex items-center gap-3">
         <div
           aria-hidden="true"
-          className="grid h-10 w-10 place-items-center rounded-xl bg-copper-400 text-[#191512] shadow-[0_10px_24px_-16px_rgba(231,173,114,0.95)]"
+          className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-amber-400 to-copper-500 text-[#191512] shadow-[0_10px_24px_-12px_rgba(231,173,114,0.95)]"
         >
-          <span className="font-mono text-sm font-semibold">H</span>
+          <span className="font-mono text-base font-bold">H</span>
         </div>
         <div>
-          <h1 className="text-xl font-semibold tracking-[-0.035em] text-white sm:text-2xl">
-            Tower of Hanoi Visualizer
-          </h1>
-          <p className="mt-0.5 text-sm text-slate-400">Play the puzzle. Trace the recursion. See why every move matters.</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-[-0.035em] text-white sm:text-2xl">
+              Trò Chơi Tháp Hà Nội
+            </h1>
+            <span className="rounded bg-copper-400/20 px-2 py-0.5 text-[10px] font-mono font-semibold text-copper-300 border border-copper-400/30">
+              DSA Visualizer
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs sm:text-sm text-slate-400">
+            Khám phá trực quan vẻ đẹp của đệ quy, vòng lặp và mã Gray qua trò chơi toán học kinh điển.
+          </p>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <nav aria-label="Learning mode" className="instrument-well flex items-center p-1">
+        {/* Mode Navigation */}
+        <nav aria-label="Chế độ học tập" className="instrument-well flex items-center p-1">
           {modes.map((item) => {
             const Icon = item.icon;
             const isActive = item.id === mode;
@@ -53,14 +70,43 @@ export function Header({ mode, onModeChange, onReset }: HeaderProps) {
                 type="button"
               >
                 <Icon aria-hidden="true" size={16} strokeWidth={1.8} />
-                {item.label}
+                <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
-        <button className="control-button control-button-quiet" onClick={onReset} type="button">
+
+        {/* Rules & Guide Button */}
+        <button
+          className="control-button border-white/[0.12] bg-white/[0.04] text-slate-200 hover:text-white"
+          onClick={onOpenRules}
+          type="button"
+          title="Xem luật chơi và truyền thuyết 64 đĩa vàng"
+        >
+          <BookOpen size={16} className="text-copper-400" />
+          <span className="hidden sm:inline">Luật chơi</span>
+        </button>
+
+        {/* Audio Mute Toggle */}
+        <button
+          className="control-button control-button-quiet text-slate-400 hover:text-white"
+          onClick={onToggleSound}
+          type="button"
+          title={isMuted ? "Bật âm thanh" : "Tắt âm thanh"}
+          aria-label={isMuted ? "Bật âm thanh" : "Tắt âm thanh"}
+        >
+          {isMuted ? <VolumeX size={17} className="text-signal-red" /> : <Volume2 size={17} className="text-signal-green" />}
+        </button>
+
+        {/* Reset Button */}
+        <button
+          className="control-button control-button-quiet text-slate-300 hover:text-white"
+          onClick={onReset}
+          type="button"
+          title="Đặt lại toàn bộ trạng thái"
+        >
           <RotateCcw aria-hidden="true" size={16} />
-          Reset
+          <span className="hidden sm:inline">Đặt lại</span>
         </button>
       </div>
     </header>

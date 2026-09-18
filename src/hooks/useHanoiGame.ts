@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { applyMove, generateInitialRods, isPuzzleSolved, validateMove } from "../algorithms/hanoi";
+import {
+  applyMove,
+  generateInitialRods,
+  getNextOptimalMove,
+  isPuzzleSolved,
+  validateMove
+} from "../algorithms/hanoi";
 import type { HanoiMove, HanoiRods, Rod } from "../types/hanoi";
+import { sound } from "../utils/audio";
 
 interface UseHanoiGameReturn {
   rods: HanoiRods;
@@ -10,8 +17,12 @@ interface UseHanoiGameReturn {
   isSolved: boolean;
   errorMessage: string | null;
   shakeRod: Rod | null;
+  elapsedSeconds: number;
+  hintMove: { from: Rod; to: Rod; disk: number; reason: string } | null;
   handleSelectRod: (rod: Rod) => void;
   handleDirectMove: (from: Rod, to: Rod) => boolean;
+  undo: () => void;
+  requestHint: () => void;
   resetGame: () => void;
 }
 
@@ -22,6 +33,19 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
   const [moveHistory, setMoveHistory] = useState<HanoiMove[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [shakeRod, setShakeRod] = useState<Rod | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [hintMove, setHintMove] = useState<{ from: Rod; to: Rod; disk: number; reason: string } | null>(null);
+
+  const isSolved = isPuzzleSolved(rods, diskCount, "C");
+
+  // Timer effect: ticks every second when game is active and not solved
+  useEffect(() => {
+    if (isSolved || moveCount === 0) return;
+    const interval = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isSolved, moveCount]);
 
   // Reset when diskCount changes
   useEffect(() => {
@@ -31,6 +55,8 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     setMoveHistory([]);
     setErrorMessage(null);
     setShakeRod(null);
+    setElapsedSeconds(0);
+    setHintMove(null);
   }, [diskCount]);
 
   const resetGame = useCallback(() => {
@@ -40,9 +66,12 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     setMoveHistory([]);
     setErrorMessage(null);
     setShakeRod(null);
+    setElapsedSeconds(0);
+    setHintMove(null);
   }, [diskCount]);
 
   const triggerShake = useCallback((rod: Rod, msg: string) => {
+    sound.playError();
     setErrorMessage(msg);
     setShakeRod(rod);
     const timer = setTimeout(() => {
@@ -60,7 +89,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
 
       const validation = validateMove(rods[from], rods[to]);
       if (!validation.valid) {
-        triggerShake(to, validation.reason ?? "Invalid move.");
+        triggerShake(to, validation.reason ?? "Nước đi không hợp lệ.");
         return false;
       }
 
@@ -68,14 +97,15 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
       const nextRods = applyMove(rods, from, to);
       const nextMoveCount = moveCount + 1;
 
+      sound.playDrop();
+
       const newMove: HanoiMove = {
         id: nextMoveCount,
         disk: movingDisk,
         from,
         to,
         moveIndex: nextMoveCount,
-        callId: `manual-${nextMoveCount}`,
-        explanation: `Moved Disk ${movingDisk} from Rod ${from} to Rod ${to}.`
+        explanation: `Chuyển Đĩa ${movingDisk} từ Cọc ${from} sang Cọc ${to}.`
       };
 
       setRods(nextRods);
@@ -83,18 +113,25 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
       setMoveHistory((prev) => [...prev, newMove]);
       setSelectedRod(null);
       setErrorMessage(null);
+      setHintMove(null);
+
+      if (isPuzzleSolved(nextRods, diskCount, "C")) {
+        sound.playVictory();
+      }
+
       return true;
     },
-    [rods, moveCount, triggerShake]
+    [rods, moveCount, diskCount, triggerShake]
   );
 
   const handleSelectRod = useCallback(
     (rod: Rod) => {
       if (selectedRod === null) {
         if (rods[rod].length === 0) {
-          triggerShake(rod, `Rod ${rod} has no disks to move.`);
+          triggerShake(rod, `Cọc ${rod} không có đĩa nào để di chuyển.`);
           return;
         }
+        sound.playPickup();
         setSelectedRod(rod);
         setErrorMessage(null);
       } else if (selectedRod === rod) {
@@ -102,14 +139,39 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
         setSelectedRod(null);
         setErrorMessage(null);
       } else {
-        // Attempt move from selectedRod to rod
+        // Move from selectedRod to rod
         handleDirectMove(selectedRod, rod);
       }
     },
     [selectedRod, rods, triggerShake, handleDirectMove]
   );
 
-  const isSolved = isPuzzleSolved(rods, diskCount, "C");
+  const undo = useCallback(() => {
+    if (moveHistory.length === 0) return;
+    const lastMove = moveHistory[moveHistory.length - 1];
+
+    // Reverse the move: lastMove.to -> lastMove.from
+    const nextRods = applyMove(rods, lastMove.to, lastMove.from);
+    sound.playPickup();
+
+    setRods(nextRods);
+    setMoveCount((prev) => Math.max(0, prev - 1));
+    setMoveHistory((prev) => prev.slice(0, -1));
+    setSelectedRod(null);
+    setErrorMessage(null);
+    setHintMove(null);
+  }, [moveHistory, rods]);
+
+  const requestHint = useCallback(() => {
+    const hint = getNextOptimalMove(rods, diskCount, "C");
+    if (hint) {
+      sound.playPickup();
+      setHintMove(hint);
+      setErrorMessage(`Gợi ý: ${hint.reason}`);
+    } else {
+      setErrorMessage("Câu đố đã được hoàn thành!");
+    }
+  }, [rods, diskCount]);
 
   return {
     rods,
@@ -119,8 +181,12 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     isSolved,
     errorMessage,
     shakeRod,
+    elapsedSeconds,
+    hintMove,
     handleSelectRod,
     handleDirectMove,
+    undo,
+    requestHint,
     resetGame
   };
 }
