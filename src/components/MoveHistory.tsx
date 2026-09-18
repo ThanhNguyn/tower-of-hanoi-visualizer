@@ -15,15 +15,24 @@ export function MoveHistory({
   onSelectStep,
   isInteractive = true
 }: MoveHistoryProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const activeItemRef = useRef<HTMLButtonElement | null>(null);
 
-  // Auto scroll active move into view
+  // Safely scroll ONLY within the internal container, NEVER scrolling the main window!
   useEffect(() => {
-    if (activeItemRef.current) {
-      activeItemRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
-      });
+    if (containerRef.current && activeItemRef.current) {
+      const container = containerRef.current;
+      const item = activeItemRef.current;
+      const itemTop = item.offsetTop;
+      const itemHeight = item.offsetHeight;
+      const containerTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+
+      if (itemTop < containerTop) {
+        container.scrollTop = itemTop;
+      } else if (itemTop + itemHeight > containerTop + containerHeight) {
+        container.scrollTop = itemTop + itemHeight - containerHeight;
+      }
     }
   }, [currentStep]);
 
@@ -39,7 +48,7 @@ export function MoveHistory({
         </span>
       </div>
 
-      <div className="overflow-y-auto max-h-72 p-2 space-y-1">
+      <div ref={containerRef} className="overflow-y-auto max-h-72 p-2 space-y-1">
         {moves.length === 0 ? (
           <div className="flex h-32 items-center justify-center p-4 text-center font-mono text-xs text-slate-500">
             No moves recorded yet

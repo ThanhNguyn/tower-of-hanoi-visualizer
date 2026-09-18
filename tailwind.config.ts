@@ -32,6 +32,11 @@ export default {
         float: "0 24px 50px -32px rgba(0, 0, 0, 0.98)"
       },
       keyframes: {
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-8px)" },
+          "40%, 80%": { transform: "translateX(8px)" }
+        },
         "trace-pulse": {
           "0%, 100%": { opacity: "0.55" },
           "50%": { opacity: "1" }
@@ -42,6 +47,7 @@ export default {
         }
       },
       animation: {
+        shake: "shake 0.45s ease-in-out",
         "trace-pulse": "trace-pulse 1.8s ease-in-out infinite",
         "success-stamp": "success-stamp 300ms cubic-bezier(0.16, 1, 0.3, 1) both"
       }
