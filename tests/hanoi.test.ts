@@ -3,8 +3,9 @@ import {
   applyMove,
   generateExecutionTrace,
   generateInitialRods,
-  getNextOptimalMove,
   getBoardStateAtStep,
+  getMinMovesToTarget,
+  getNextOptimalMove,
   isPuzzleSolved,
   solveHanoiBinary,
   solveHanoiIterative,
@@ -105,6 +106,34 @@ describe("Tower of Hanoi Multi-Algorithm Suite & Game Engine", () => {
       expect(step.move).not.toBeNull();
       expect(step.stack.length).toBeGreaterThan(0);
       expect(step.stack.length).toBeLessThanOrEqual(n);
+    }
+  });
+
+  it("accurately computes minimum remaining moves to target peg C for completion progress", () => {
+    const n = 4;
+    const initialRods = generateInitialRods(n);
+
+    // Initial state: exactly 2^n - 1 moves needed
+    expect(getMinMovesToTarget(initialRods, n, "C")).toBe(15);
+
+    // Solved state: 0 moves needed
+    const solvedRods = { A: [], B: [], C: [4, 3, 2, 1] };
+    expect(getMinMovesToTarget(solvedRods, n, "C")).toBe(0);
+
+    // User bug state: Disk 1 moved randomly to C while 2, 3, 4 are still on A
+    const userBugRods = { A: [4, 3, 2], B: [], C: [1] };
+    const bugRemaining = getMinMovesToTarget(userBugRods, n, "C");
+    // Should NOT be 0 (user had 100% bug), it requires full 15 moves to resolve
+    expect(bugRemaining).toBe(15);
+
+    // Along optimal path, remaining moves strictly decrements from 15 to 0
+    let curRods = generateInitialRods(n);
+    const moves = solveHanoiRecursive(n);
+    expect(getMinMovesToTarget(curRods, n, "C")).toBe(15);
+
+    for (let i = 0; i < moves.length; i++) {
+      curRods = applyMove(curRods, moves[i].from, moves[i].to);
+      expect(getMinMovesToTarget(curRods, n, "C")).toBe(15 - (i + 1));
     }
   });
 });

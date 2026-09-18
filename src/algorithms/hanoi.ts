@@ -475,6 +475,46 @@ export function getNextOptimalMove(
 }
 
 /**
+ * Computes the exact shortest path distance (minimum remaining moves)
+ * from ANY current board configuration to the solved goal state (all disks on target).
+ * Runs in O(N) time using recursive decomposition on the Sierpiński state graph.
+ */
+export function getMinMovesToTarget(
+  rods: HanoiRods,
+  totalDisks: number,
+  target: Rod = "C"
+): number {
+  if (isPuzzleSolved(rods, totalDisks, target)) {
+    return 0;
+  }
+
+  function findRodOfDisk(d: number): Rod {
+    if (rods.A.includes(d)) return "A";
+    if (rods.B.includes(d)) return "B";
+    return "C";
+  }
+
+  function distance(k: number, dest: Rod): number {
+    if (k === 0) return 0;
+    const currentRod = findRodOfDisk(k);
+    if (currentRod === dest) {
+      return distance(k - 1, dest);
+    }
+    const otherRod = RODS.find((r) => r !== currentRod && r !== dest) as Rod;
+    // To move disk k from currentRod to dest:
+    // 1. Move disks 1..k-1 to otherRod: distance(k - 1, otherRod)
+    // 2. Move disk k to dest: 1 move
+    // 3. Move disks 1..k-1 from otherRod to dest: (2^(k-1) - 1) moves
+    const costToClear = distance(k - 1, otherRod);
+    const standardTransfer = Math.pow(2, k - 1) - 1;
+    return costToClear + 1 + standardTransfer;
+  }
+
+  return distance(totalDisks, target);
+}
+
+
+/**
  * Generates the recursive call tree representation for visual inspection.
  */
 export function buildCallTree(n: number): TreeNode {

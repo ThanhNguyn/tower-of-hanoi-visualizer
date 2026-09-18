@@ -10,6 +10,7 @@ interface HanoiBoardProps {
   shakeRod: RodType | null;
   hintMove?: { from: RodType; to: RodType; disk: number } | null;
   isInteractive: boolean;
+  speed?: number;
   onSelectRod: (rod: RodType) => void;
   onDropDisk?: (fromRod: RodType, toRod: RodType) => void;
 }
@@ -33,6 +34,7 @@ export function HanoiBoard({
   shakeRod,
   hintMove,
   isInteractive,
+  speed = 1,
   onSelectRod,
   onDropDisk
 }: HanoiBoardProps) {
@@ -202,6 +204,7 @@ export function HanoiBoard({
                 isSelected={isSelected}
                 isInteractive={isInteractive}
                 isHinted={isHinted}
+                speed={speed}
                 onClick={() => {
                   if (isInteractive) {
                     onSelectRod(pos.rod);

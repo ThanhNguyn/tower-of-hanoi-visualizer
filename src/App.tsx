@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useHanoiGame } from "./hooks/useHanoiGame";
 import { useHanoiSimulation } from "./hooks/useHanoiSimulation";
+import { getMinMovesToTarget } from "./algorithms/hanoi";
 import { sound } from "./utils/audio";
 
 import { Header } from "./components/Header";
@@ -30,7 +31,21 @@ export default function App() {
   const currentRods = activeSource === "simulation" ? sim.currentRods : game.rods;
   const currentMove = activeSource === "simulation" ? sim.currentStep : game.moveCount;
   const isSolved = activeSource === "simulation" ? sim.isSolved : game.isSolved;
-  const progress = Math.min(100, (currentMove / minimumMoves) * 100);
+
+  // Real shortest-path distance to solved state (Peg C)
+  // Ensures random moves or moving back and forth never falsely report 100% progress
+  const remainingMoves = getMinMovesToTarget(currentRods, diskCount, "C");
+  const manualProgress = isSolved
+    ? 100
+    : remainingMoves >= minimumMoves
+    ? 0
+    : Math.max(0, Math.min(99, Math.round(((minimumMoves - remainingMoves) / minimumMoves) * 100)));
+
+  const progress = isSolved
+    ? 100
+    : activeSource === "simulation"
+    ? (sim.totalSteps > 0 ? Math.round((sim.currentStep / sim.totalSteps) * 100) : 0)
+    : manualProgress;
 
   const handleReset = useCallback(() => {
     game.resetGame();
@@ -131,6 +146,7 @@ export default function App() {
               shakeRod={activeSource === "manual" ? game.shakeRod : null}
               hintMove={activeSource === "manual" ? game.hintMove : null}
               isInteractive={!sim.isPlaying}
+              speed={sim.speed}
               onSelectRod={(rod) => {
                 if (sim.isPlaying) return;
                 setActiveSource("manual");

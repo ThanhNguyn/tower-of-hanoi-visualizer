@@ -13,11 +13,13 @@ interface DiskProps {
   isSelected: boolean;
   isInteractive: boolean;
   isHinted?: boolean;
+  speed?: number;
   onClick?: () => void;
   onDragStart?: (e: React.DragEvent) => void;
 }
 
 // Tactile mineral & architectural palette: authentic, dignified, zero artificial neon glow
+
 const DISK_COLORS: Record<
   number,
   {
@@ -80,6 +82,7 @@ export function Disk({
   isSelected,
   isInteractive,
   isHinted,
+  speed = 1,
   onClick,
   onDragStart
 }: DiskProps) {
@@ -91,8 +94,10 @@ export function Disk({
     rod: currentRod,
     bottom: targetBottom
   });
+  const wasSelectedRef = useRef(false);
 
   const prevLoc = prevLocRef.current;
+  const wasSelected = wasSelectedRef.current;
   const hasMovedRod = prevLoc.rod !== currentRod;
 
   useEffect(() => {
@@ -100,9 +105,10 @@ export function Disk({
       rod: currentRod,
       bottom: targetBottom
     };
-  }, [currentRod, targetBottom]);
+    wasSelectedRef.current = isSelected;
+  }, [currentRod, targetBottom, isSelected]);
 
-  // Width calculation: neatly scaled from 60px to 220px
+  // Width calculation: neatly scaled from 56px to 224px
   const minWidthPx = 56;
   const maxWidthPx = 224;
   const widthPx =
@@ -112,39 +118,53 @@ export function Disk({
 
   const styleConfig = DISK_COLORS[disk] || DISK_COLORS[8];
 
-  // 3-Stage Arc Animation Definition:
-  // If moving rods: (fromLeft, fromBottom) -> (fromLeft, hoverTopY) -> (toLeft, hoverTopY) -> (toLeft, toBottom)
-  // If selected: hover at hoverTopY
-  // If resting: sit at (targetLeft, targetBottom)
+  // Dynamic animation duration adapted to current playback speed
+  const moveInterval = Math.max(120, Math.round(700 / (speed || 1)));
+  const animDuration = Math.max(0.12, Math.min(0.85, (moveInterval * 0.82) / 1000));
+
   let animateLeft: string | string[];
   let animateBottom: string | string[];
   let transitionConfig: Record<string, unknown>;
 
   if (isSelected) {
-    // Hovering above rod waiting for destination click
+    // Hovering above rod waiting for destination click - gentle tactile lift
     animateLeft = `${targetLeft}%`;
     animateBottom = `${hoverTopY}px`;
     transitionConfig = {
-      bottom: { type: "spring", stiffness: 350, damping: 25 },
-      left: { duration: 0.2 }
+      bottom: { type: "spring", stiffness: 360, damping: 25 },
+      left: { duration: 0.16 }
     };
   } else if (hasMovedRod) {
-    // Parabolic 3-stage keyframe: LIFT -> GLIDE -> LOWER
     const prevLeft = rodCenters[prevLoc.rod];
-    animateLeft = [`${prevLeft}%`, `${prevLeft}%`, `${targetLeft}%`, `${targetLeft}%`];
-    animateBottom = [`${prevLoc.bottom}px`, `${hoverTopY}px`, `${hoverTopY}px`, `${targetBottom}px`];
-    transitionConfig = {
-      duration: 0.42,
-      times: [0, 0.28, 0.72, 1],
-      ease: ["easeInOut", "easeInOut", "easeOut"]
-    };
+
+    if (wasSelected) {
+      // Manual play: Disk is ALREADY floating at hoverTopY!
+      // Silky glide across at hover altitude, then smooth landing into slot
+      animateLeft = [`${prevLeft}%`, `${targetLeft}%`, `${targetLeft}%`];
+      animateBottom = [`${hoverTopY}px`, `${hoverTopY}px`, `${targetBottom}px`];
+      transitionConfig = {
+        duration: 0.44,
+        times: [0, 0.58, 1],
+        ease: "easeInOut"
+      };
+    } else {
+      // Autonomous simulation: 3-stage fluid arc
+      // 1. Vertical lift -> 2. Horizontal glide -> 3. Soft drop
+      animateLeft = [`${prevLeft}%`, `${prevLeft}%`, `${targetLeft}%`, `${targetLeft}%`];
+      animateBottom = [`${prevLoc.bottom}px`, `${hoverTopY}px`, `${hoverTopY}px`, `${targetBottom}px`];
+      transitionConfig = {
+        duration: animDuration,
+        times: [0, 0.28, 0.72, 1],
+        ease: "easeInOut"
+      };
+    }
   } else {
-    // Resting in peg stack
+    // Resting in peg stack or smoothly returning when deselected
     animateLeft = `${targetLeft}%`;
     animateBottom = `${targetBottom}px`;
     transitionConfig = {
-      bottom: { type: "spring", stiffness: 340, damping: 26 },
-      left: { duration: 0.2 }
+      bottom: { type: "spring", stiffness: 360, damping: 26 },
+      left: { duration: 0.18 }
     };
   }
 
@@ -152,6 +172,7 @@ export function Disk({
     <motion.div
       initial={false}
       animate={{
+        x: "-50%",
         left: animateLeft,
         bottom: animateBottom,
         scale: isSelected ? 1.05 : isHinted ? [1, 1.05, 1] : 1
@@ -184,7 +205,6 @@ export function Disk({
       }`}
       style={{
         width: `${widthPx}px`,
-        transform: "translateX(-50%)",
         background: styleConfig.bg,
         borderColor: styleConfig.border,
         boxShadow: isSelected
