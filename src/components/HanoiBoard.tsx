@@ -116,8 +116,8 @@ export function HanoiBoard({
         })}
       </div>
 
-      {/* Interactive Peg Dropping & Clicking Column Zones */}
-      <div className="absolute inset-x-6 top-24 bottom-10 grid grid-cols-3 gap-4">
+      {/* Interactive Peg Zones and Poles */}
+      <div className="absolute inset-x-6 top-20 bottom-10 grid grid-cols-3 gap-4 pointer-events-none">
         {ROD_CONFIGS.map(({ id }) => {
           const isSelected = selectedRod === id;
           const isShaking = shakeRod === id;
@@ -136,14 +136,14 @@ export function HanoiBoard({
                   onDropDisk?.(selectedRod, id);
                 }
               }}
-              className={`relative flex flex-col items-center justify-end rounded-xl transition-all ${
+              className={`relative flex flex-col items-center justify-end rounded-xl transition-all pointer-events-auto ${
                 isShaking ? "animate-shake" : ""
               } ${
                 isSelected
-                  ? "bg-sky-500/[0.03]"
+                  ? "bg-sky-500/[0.04]"
                   : isHintTarget
-                  ? "bg-amber-400/[0.03]"
-                  : "hover:bg-white/[0.015]"
+                  ? "bg-amber-400/[0.04]"
+                  : "hover:bg-white/[0.02]"
               } ${isInteractive ? "cursor-pointer" : "cursor-default"}`}
             >
               {/* Solid 3D Polished Stainless Steel Peg Pole */}
@@ -164,12 +164,12 @@ export function HanoiBoard({
                 }}
               />
 
-              {/* Milled Steel Socket Collar at base of peg */}
+              {/* Milled Steel Socket Collar - sits flush on top of base plinth */}
               <div
-                className={`h-2.5 w-12 sm:w-16 rounded-full border transition-all mt-[-2px] ${
+                className={`h-2.5 w-12 sm:w-14 rounded-full border transition-all ${
                   isSelected
-                    ? "border-sky-400 bg-sky-500/20"
-                    : "border-white/[0.12] bg-[#1a1e29]"
+                    ? "border-sky-400 bg-sky-500/30"
+                    : "border-white/[0.15] bg-[#1a1e29]"
                 }`}
                 style={{
                   boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.2)"
@@ -181,7 +181,7 @@ export function HanoiBoard({
       </div>
 
       {/* Disks Layer: Unified coordinate plane with 3-stage arc motion */}
-      <div className="absolute inset-x-6 top-24 bottom-10 pointer-events-none">
+      <div className="absolute inset-x-6 top-20 bottom-10 pointer-events-none">
         {allDisks.map((diskNum) => {
           const pos = diskPositions[diskNum];
           if (!pos) return null;
@@ -216,19 +216,20 @@ export function HanoiBoard({
         })}
       </div>
 
-      {/* Solid Milled Dark Plinth Base (Clean, zero overlapping labels) */}
-      <div className="absolute inset-x-6 bottom-3 flex flex-col items-center pointer-events-none">
+      {/* Solid Milled Dark Plinth Base - perfectly aligned with collars and disks */}
+      <div className="absolute inset-x-6 bottom-4 flex flex-col items-center pointer-events-none">
         <div
-          className="h-4.5 w-full rounded-xl border border-white/[0.1] shadow-lg"
+          className="h-6 w-full rounded-xl border border-white/[0.12] shadow-xl"
           style={{
             background:
-              "linear-gradient(180deg, #222736 0%, #161923 50%, #0d0f15 100%)",
+              "linear-gradient(180deg, #252a38 0%, #171a24 50%, #0d0f15 100%)",
             boxShadow:
-              "0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+              "0 10px 24px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
           }}
         />
       </div>
     </div>
   );
 }
+
 

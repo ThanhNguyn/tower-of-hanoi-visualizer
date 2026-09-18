@@ -83,7 +83,7 @@ export function Disk({
   onClick,
   onDragStart
 }: DiskProps) {
-  const targetBottom = 16 + currentSlot * 32;
+  const targetBottom = 3 + currentSlot * 32;
   const targetLeft = rodCenters[currentRod];
 
   // Ref to track previous location for smooth parabolic arc
