@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #eef2f7;
+    background: #090d13;
+    font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background:
+      radial-gradient(circle at 50% -22rem, rgba(63, 94, 135, 0.2), transparent 48rem),
+      #090d13;
+  }
+
+  button,
+  select {
+    font: inherit;
+  }
+
+  button:not(:disabled),
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    color: #10151e;
+    background: #f2ca9a;
+  }
+
+  :focus-visible {
+    outline: 2px solid #86b7ff;
+    outline-offset: 3px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #3e5169 #111924;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #111924;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 3px solid #111924;
+    border-radius: 999px;
+    background: #3e5169;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply min-h-screen px-4 pb-14 pt-5 sm:px-6 lg:px-8 lg:pt-7;
+  }
+
+  .app-frame {
+    @apply mx-auto max-w-[1540px];
+  }
+
+  .instrument-panel {
+    @apply rounded-[14px] border border-white/[0.09] bg-ink-850/95;
+  }
+
+  .instrument-well {
+    @apply rounded-xl bg-[#0a1018] ring-1 ring-inset ring-white/[0.075];
+  }
+
+  .elevated-surface {
+    @apply rounded-[14px] bg-[#141d29] shadow-panel;
+  }
+
+  .control-button {
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.035] px-3 text-sm font-semibold text-slate-100 transition duration-200 hover:border-white/[0.18] hover:bg-white/[0.08] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .control-button-primary {
+    @apply border-copper-400/50 bg-copper-400 px-4 text-[#1b1714] hover:border-copper-300 hover:bg-copper-300;
+  }
+
+  .control-button-quiet {
+    @apply border-transparent bg-transparent text-slate-300 hover:border-white/[0.08] hover:bg-white/[0.05] hover:text-white;
+  }
+
+  .mode-button {
+    @apply relative inline-flex min-h-10 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-slate-400 transition duration-200 hover:text-slate-100;
+  }
+
+  .mode-button-active {
+    @apply bg-white/[0.08] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)];
+  }
+
+  .field-label {
+    @apply font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500;
+  }
+
+  .data-value {
+    @apply font-mono tabular-nums;
+  }
+
+  .section-heading {
+    @apply text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl;
+  }
+
+  .status-dot {
+    @apply h-1.5 w-1.5 rounded-full;
+  }
+}
