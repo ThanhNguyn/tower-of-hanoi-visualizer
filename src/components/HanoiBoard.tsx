@@ -20,10 +20,10 @@ const ROD_CENTERS: Record<RodType, number> = {
   C: 83.333
 };
 
-const ROD_CONFIGS: Array<{ id: RodType; label: string; role: string; roleColor: string }> = [
-  { id: "A", label: "PEG A", role: "Source", roleColor: "text-amber-400 bg-amber-400/15 border-amber-400/30" },
-  { id: "B", label: "PEG B", role: "Auxiliary", roleColor: "text-sky-400 bg-sky-400/15 border-sky-400/30" },
-  { id: "C", label: "PEG C", role: "Target", roleColor: "text-emerald-400 bg-emerald-400/15 border-emerald-400/30" }
+const ROD_CONFIGS: Array<{ id: RodType; label: string; role: string }> = [
+  { id: "A", label: "Peg A", role: "Source" },
+  { id: "B", label: "Peg B", role: "Auxiliary" },
+  { id: "C", label: "Peg C", role: "Target" }
 ];
 
 export function HanoiBoard({
@@ -39,7 +39,7 @@ export function HanoiBoard({
   // Calculated vertical metrics guaranteeing zero overlap and comfortable breathing room
   const poleHeight = Math.max(180, totalDisks * 32 + 40);
   const hoverTopY = poleHeight + 36;
-  const boardHeight = hoverTopY + 80;
+  const boardHeight = hoverTopY + 84;
 
   // Map each disk to its current rod and slot index
   const diskPositions = useMemo(() => {
@@ -69,21 +69,21 @@ export function HanoiBoard({
 
   return (
     <div
-      className="relative w-full rounded-2xl border border-white/[0.1] bg-[#0a0f18] p-6 shadow-2xl overflow-hidden select-none"
+      className="relative w-full rounded-2xl border border-white/[0.08] bg-[#0d0f15] p-6 shadow-2xl overflow-hidden select-none"
       style={{ minHeight: `${boardHeight}px` }}
     >
-      {/* Background ambient lighting */}
+      {/* Subtle warm ambient table light */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-40"
+        className="pointer-events-none absolute inset-0 opacity-25"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 50% 90%, rgba(231,173,114,0.07), transparent 75%)"
+            "radial-gradient(ellipse 65% 50% at 50% 95%, rgba(245, 158, 11, 0.08), transparent 75%)"
         }}
       />
 
-      {/* Top Peg Identifiers (Cleanly spaced, zero text overlap) */}
-      <div className="relative z-10 grid grid-cols-3 gap-4 mb-3">
-        {ROD_CONFIGS.map(({ id, label, role, roleColor }) => {
+      {/* Top Peg Identifiers (Clean, dignified, zero text collision) */}
+      <div className="relative z-10 grid grid-cols-3 gap-4 mb-2">
+        {ROD_CONFIGS.map(({ id, label, role }) => {
           const isSelected = selectedRod === id;
           const isHintTarget = hintMove?.to === id;
           const count = rods[id].length;
@@ -94,23 +94,21 @@ export function HanoiBoard({
               onClick={() => isInteractive && onSelectRod(id)}
               className={`flex flex-col items-center py-2 px-3 rounded-xl transition-all ${
                 isSelected
-                  ? "bg-signal-blue/10 ring-1 ring-signal-blue/50"
+                  ? "bg-sky-500/10 ring-1 ring-sky-400/40"
                   : isHintTarget
                   ? "bg-amber-400/10 ring-1 ring-amber-400/40"
                   : "bg-white/[0.02] hover:bg-white/[0.04]"
               } ${isInteractive ? "cursor-pointer" : "cursor-default"}`}
             >
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs sm:text-sm font-bold tracking-wider text-slate-200">
+                <span className="font-semibold text-xs sm:text-sm text-slate-200">
                   {label}
                 </span>
-                <span
-                  className={`rounded-full border px-2 py-0.5 text-[9px] font-mono font-semibold uppercase tracking-widest ${roleColor}`}
-                >
+                <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
                   {role}
                 </span>
               </div>
-              <span className="mt-1 font-mono text-[10px] text-slate-400">
+              <span className="mt-0.5 font-mono text-[11px] text-slate-500">
                 {count} {count === 1 ? "disk" : "disks"}
               </span>
             </div>
@@ -119,7 +117,7 @@ export function HanoiBoard({
       </div>
 
       {/* Interactive Peg Dropping & Clicking Column Zones */}
-      <div className="absolute inset-x-6 top-24 bottom-12 grid grid-cols-3 gap-4">
+      <div className="absolute inset-x-6 top-24 bottom-10 grid grid-cols-3 gap-4">
         {ROD_CONFIGS.map(({ id }) => {
           const isSelected = selectedRod === id;
           const isShaking = shakeRod === id;
@@ -142,31 +140,40 @@ export function HanoiBoard({
                 isShaking ? "animate-shake" : ""
               } ${
                 isSelected
-                  ? "bg-signal-blue/[0.04]"
+                  ? "bg-sky-500/[0.03]"
                   : isHintTarget
-                  ? "bg-amber-400/[0.04]"
+                  ? "bg-amber-400/[0.03]"
                   : "hover:bg-white/[0.015]"
               } ${isInteractive ? "cursor-pointer" : "cursor-default"}`}
             >
-              {/* Solid Polished Metallic Peg Pole */}
+              {/* Solid 3D Polished Stainless Steel Peg Pole */}
               <div
-                className={`w-3 sm:w-3.5 rounded-t-full transition-all duration-300 shadow-md ${
+                className={`w-3.5 sm:w-4 rounded-t-full transition-all duration-300 shadow-md ${
                   isSelected
-                    ? "bg-gradient-to-b from-signal-blue via-slate-200 to-slate-400 shadow-[0_0_16px_rgba(134,183,255,0.8)]"
+                    ? "ring-2 ring-sky-400/80"
                     : isHintTarget
-                    ? "bg-gradient-to-b from-amber-300 via-slate-300 to-slate-500 shadow-[0_0_14px_rgba(251,191,36,0.6)]"
-                    : "bg-gradient-to-b from-slate-400 via-slate-600 to-slate-800"
+                    ? "ring-2 ring-amber-400/80"
+                    : ""
                 }`}
-                style={{ height: `${poleHeight}px` }}
+                style={{
+                  height: `${poleHeight}px`,
+                  background:
+                    "linear-gradient(90deg, #2d3340 0%, #475569 25%, #94a3b8 50%, #475569 75%, #1e2430 100%)",
+                  boxShadow:
+                    "0 2px 8px rgba(0, 0, 0, 0.5), inset 1px 0 1px rgba(255, 255, 255, 0.4)"
+                }}
               />
 
               {/* Milled Steel Socket Collar at base of peg */}
               <div
                 className={`h-2.5 w-12 sm:w-16 rounded-full border transition-all mt-[-2px] ${
                   isSelected
-                    ? "border-signal-blue bg-signal-blue/30 shadow-[0_0_10px_rgba(134,183,255,0.5)]"
-                    : "border-white/[0.15] bg-slate-800"
+                    ? "border-sky-400 bg-sky-500/20"
+                    : "border-white/[0.12] bg-[#1a1e29]"
                 }`}
+                style={{
+                  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+                }}
               />
             </div>
           );
@@ -174,7 +181,7 @@ export function HanoiBoard({
       </div>
 
       {/* Disks Layer: Unified coordinate plane with 3-stage arc motion */}
-      <div className="absolute inset-x-6 top-24 bottom-12 pointer-events-none">
+      <div className="absolute inset-x-6 top-24 bottom-10 pointer-events-none">
         {allDisks.map((diskNum) => {
           const pos = diskPositions[diskNum];
           if (!pos) return null;
@@ -209,15 +216,19 @@ export function HanoiBoard({
         })}
       </div>
 
-      {/* Heavy Obsidian & Brass Base Pedestal */}
+      {/* Solid Milled Dark Plinth Base (Clean, zero overlapping labels) */}
       <div className="absolute inset-x-6 bottom-3 flex flex-col items-center pointer-events-none">
-        <div className="h-4 w-full rounded-lg border border-white/[0.14] bg-gradient-to-r from-ink-900 via-slate-800 to-ink-900 shadow-xl" />
-        <div className="mt-1 flex items-center justify-between w-full px-4 text-[9px] font-mono tracking-wider text-slate-500">
-          <span>ORIGIN PEG (A)</span>
-          <span>BUFFER PEG (B)</span>
-          <span>DESTINATION PEG (C)</span>
-        </div>
+        <div
+          className="h-4.5 w-full rounded-xl border border-white/[0.1] shadow-lg"
+          style={{
+            background:
+              "linear-gradient(180deg, #222736 0%, #161923 50%, #0d0f15 100%)",
+            boxShadow:
+              "0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+          }}
+        />
       </div>
     </div>
   );
 }
+

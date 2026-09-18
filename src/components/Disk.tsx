@@ -17,65 +17,57 @@ interface DiskProps {
   onDragStart?: (e: React.DragEvent) => void;
 }
 
-// Sleek, high-contrast metallic color styling for disks 1 to 8
+// Tactile mineral & architectural palette: authentic, dignified, zero artificial neon glow
 const DISK_COLORS: Record<
   number,
   {
-    gradient: string;
+    bg: string;
     border: string;
     text: string;
-    glow: string;
   }
 > = {
   1: {
-    gradient: "from-amber-400 via-yellow-400 to-amber-500",
-    border: "border-yellow-200/90",
-    text: "text-amber-950",
-    glow: "rgba(250, 204, 21, 0.4)"
+    bg: "linear-gradient(180deg, #f59e0b 0%, #d97706 100%)",
+    border: "rgba(254, 243, 199, 0.35)",
+    text: "#ffffff"
   },
   2: {
-    gradient: "from-[#f2ca9a] via-[#e7ad72] to-[#cf844c]",
-    border: "border-[#fdeddc]/90",
-    text: "text-[#2b1805]",
-    glow: "rgba(231, 173, 114, 0.4)"
+    bg: "linear-gradient(180deg, #ea580c 0%, #c2410c 100%)",
+    border: "rgba(255, 237, 213, 0.35)",
+    text: "#ffffff"
   },
   3: {
-    gradient: "from-rose-500 via-rose-600 to-red-700",
-    border: "border-rose-200/90",
-    text: "text-white",
-    glow: "rgba(244, 63, 94, 0.4)"
+    bg: "linear-gradient(180deg, #e11d48 0%, #be123c 100%)",
+    border: "rgba(255, 228, 230, 0.35)",
+    text: "#ffffff"
   },
   4: {
-    gradient: "from-fuchsia-500 via-purple-600 to-purple-800",
-    border: "border-purple-200/90",
-    text: "text-white",
-    glow: "rgba(168, 85, 247, 0.4)"
+    bg: "linear-gradient(180deg, #9333ea 0%, #7e22ce 100%)",
+    border: "rgba(243, 232, 255, 0.35)",
+    text: "#ffffff"
   },
   5: {
-    gradient: "from-indigo-500 via-indigo-600 to-blue-800",
-    border: "border-indigo-200/90",
-    text: "text-white",
-    glow: "rgba(99, 102, 241, 0.4)"
+    bg: "linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%)",
+    border: "rgba(219, 234, 254, 0.35)",
+    text: "#ffffff"
   },
   6: {
-    gradient: "from-sky-400 via-blue-500 to-blue-700",
-    border: "border-sky-200/90",
-    text: "text-white",
-    glow: "rgba(14, 165, 233, 0.4)"
+    bg: "linear-gradient(180deg, #0d9488 0%, #0f766e 100%)",
+    border: "rgba(204, 251, 241, 0.35)",
+    text: "#ffffff"
   },
   7: {
-    gradient: "from-emerald-400 via-teal-500 to-teal-700",
-    border: "border-emerald-200/90",
-    text: "text-emerald-950",
-    glow: "rgba(16, 185, 129, 0.4)"
+    bg: "linear-gradient(180deg, #65a30d 0%, #4d7c0f 100%)",
+    border: "rgba(236, 252, 203, 0.35)",
+    text: "#ffffff"
   },
   8: {
-    gradient: "from-slate-500 via-slate-600 to-slate-800",
-    border: "border-slate-300/80",
-    text: "text-slate-100",
-    glow: "rgba(100, 116, 139, 0.4)"
+    bg: "linear-gradient(180deg, #475569 0%, #334155 100%)",
+    border: "rgba(241, 245, 249, 0.35)",
+    text: "#ffffff"
   }
 };
+
 
 export function Disk({
   disk,
@@ -180,35 +172,41 @@ export function Disk({
           e.stopPropagation();
           onClick?.();
         }
-      }}
-      className={`absolute z-20 flex h-7 sm:h-8 items-center justify-center rounded-lg border bg-gradient-to-r select-none transition-shadow ${
-        styleConfig.gradient
-      } ${styleConfig.border} ${
+      className={`absolute z-20 flex h-7 sm:h-8 items-center justify-center rounded-lg border select-none transition-shadow ${
         isSelected
-          ? "ring-2 ring-signal-blue ring-offset-2 ring-offset-ink-950 shadow-[0_0_24px_rgba(134,183,255,0.9)] z-30"
+          ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-[#0c0d12] z-30"
           : isHinted
-          ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-ink-950 shadow-[0_0_20px_rgba(251,191,36,0.8)]"
+          ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-[#0c0d12] z-30"
           : isInteractive && isTop
-          ? "cursor-grab active:cursor-grabbing hover:brightness-110 shadow-lg"
-          : "cursor-default shadow-md"
+          ? "cursor-grab active:cursor-grabbing hover:brightness-105"
+          : "cursor-default"
       }`}
       style={{
         width: `${widthPx}px`,
         transform: "translateX(-50%)",
+        background: styleConfig.bg,
+        borderColor: styleConfig.border,
         boxShadow: isSelected
-          ? "0 0 20px rgba(134, 183, 255, 0.85)"
-          : `0 4px 14px -2px ${styleConfig.glow}`
+          ? "0 8px 24px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(56, 189, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45)"
+          : isHinted
+          ? "0 6px 20px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(251, 191, 36, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45)"
+          : "0 4px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -2px 0 rgba(0, 0, 0, 0.25)"
       }}
       title={`Disk ${disk}${isTop ? " (Top disk)" : ""}`}
       aria-label={`Disk ${disk} of size ${disk}`}
     >
-      {/* Metallic specular light reflex */}
-      <div className="absolute inset-x-2 top-0.5 h-[2px] rounded-full bg-white/50 pointer-events-none" />
+      {/* Specular top-edge bevel highlight */}
+      <div className="absolute inset-x-2 top-0.5 h-[1.5px] rounded-full bg-white/40 pointer-events-none" />
 
-      {/* Disk Number Pill */}
-      <span className={`font-mono text-xs font-bold leading-none tracking-tight ${styleConfig.text}`}>
-        {disk}
-      </span>
+      {/* Tactile Center Peg Hole Ring */}
+      <div className="flex items-center justify-center gap-1.5 z-10">
+        <span
+          className="font-mono text-xs font-bold leading-none tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+        >
+          {disk}
+        </span>
+      </div>
     </motion.div>
   );
 }
+

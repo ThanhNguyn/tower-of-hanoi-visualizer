@@ -1,12 +1,13 @@
-import { Activity, CheckCircle2, Gauge, Layers3, Route, TimerReset } from "lucide-react";
+import { CheckCircle2, Clock, Layers3, Route, Sparkles, TimerReset } from "lucide-react";
 
 interface StatisticsPanelProps {
   diskCount: number;
   currentMove: number;
   minimumMoves: number;
-  recursionDepth: number;
+  elapsedSeconds?: number;
   progress: number;
-  mode: "play" | "solve" | "learn";
+  isSimulating: boolean;
+  algorithmName?: string;
   solved: boolean;
 }
 
@@ -14,52 +15,74 @@ export function StatisticsPanel({
   diskCount,
   currentMove,
   minimumMoves,
-  recursionDepth,
+  elapsedSeconds = 0,
   progress,
-  mode,
+  isSimulating,
+  algorithmName,
   solved
 }: StatisticsPanelProps) {
-  const delta = currentMove - minimumMoves;
+  const extraMoves = Math.max(0, currentMove - minimumMoves);
+  const minutes = Math.floor(elapsedSeconds / 60);
+  const seconds = elapsedSeconds % 60;
+  const timeFormatted = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
   const rows = [
-    { icon: Layers3, label: "Disks", value: String(diskCount) },
-    { icon: Route, label: "Current move", value: `${currentMove} / ${minimumMoves}` },
-    { icon: TimerReset, label: "Minimum moves", value: String(minimumMoves) },
-    { icon: Gauge, label: "Delta to minimum", value: delta > 0 ? `+${delta}` : String(delta) },
-    { icon: Activity, label: "Recursion depth", value: recursionDepth ? String(recursionDepth) : "—" }
+    { icon: Layers3, label: "Total disks", value: String(diskCount) },
+    { icon: Route, label: "Moves made", value: `${currentMove} / ${minimumMoves}` },
+    { icon: TimerReset, label: "Optimal minimal", value: `${minimumMoves} moves` },
+    {
+      icon: Sparkles,
+      label: "Move efficiency",
+      value: extraMoves === 0 ? "Optimal path" : `+${extraMoves} extra moves`
+    },
+    { icon: Clock, label: "Elapsed timer", value: timeFormatted }
   ];
 
   return (
-    <aside aria-label="Live puzzle statistics" className="instrument-panel overflow-hidden">
-      <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3.5">
+    <aside aria-label="Live puzzle telemetry" className="rounded-2xl border border-white/[0.08] bg-[#0d0f15] p-5 shadow-xl">
+      <div className="flex items-center justify-between border-b border-white/[0.07] pb-3 mb-3">
         <div>
-          <h2 className="text-sm font-semibold text-white">Live state</h2>
-          <p className="mt-0.5 text-xs text-slate-500">{mode === "play" ? "Manual run" : "Recursive trace"}</p>
+          <h2 className="text-sm font-semibold text-white">Live State</h2>
+          <p className="mt-0.5 text-xs text-slate-400">
+            {solved
+              ? "Puzzle completed!"
+              : isSimulating
+              ? `Auto-simulating (${algorithmName || "Recursive"})`
+              : "Manual interactive play"}
+          </p>
         </div>
         {solved ? (
-          <CheckCircle2 aria-label="Puzzle solved" className="text-signal-green" size={19} />
+          <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+            <CheckCircle2 size={16} />
+            <span>Solved</span>
+          </span>
+        ) : isSimulating ? (
+          <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
         ) : (
-          <span aria-label="Active session" className="status-dot animate-trace-pulse bg-copper-400" />
+          <span className="h-2 w-2 rounded-full bg-emerald-400" />
         )}
       </div>
-      <dl className="divide-y divide-white/[0.07] px-4">
+
+      <dl className="divide-y divide-white/[0.06]">
         {rows.map(({ icon: Icon, label, value }) => (
-          <div className="flex items-center justify-between gap-3 py-3" key={label}>
+          <div className="flex items-center justify-between gap-3 py-2.5" key={label}>
             <dt className="flex items-center gap-2 text-xs text-slate-400">
-              <Icon aria-hidden="true" size={14} strokeWidth={1.8} />
+              <Icon size={14} className="text-slate-400" />
               {label}
             </dt>
-            <dd className="data-value text-sm font-medium text-slate-100">{value}</dd>
+            <dd className="font-mono text-xs font-medium text-slate-100">{value}</dd>
           </div>
         ))}
       </dl>
-      <div className="border-t border-white/[0.07] px-4 py-3.5">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="field-label">Progress</span>
-          <span className="data-value text-xs text-slate-300">{Math.round(progress)}%</span>
+
+      <div className="mt-4 border-t border-white/[0.07] pt-3">
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="text-slate-400 font-medium">Completion Progress</span>
+          <span className="font-mono text-slate-200">{Math.round(progress)}%</span>
         </div>
         <div aria-label={`Progress ${Math.round(progress)} percent`} className="h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
           <div
-            className="h-full rounded-full bg-copper-400 transition-[width] duration-300 motion-reduce:transition-none"
+            className="h-full rounded-full bg-amber-400 transition-[width] duration-300 motion-reduce:transition-none"
             style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
           />
         </div>
@@ -67,3 +90,4 @@ export function StatisticsPanel({
     </aside>
   );
 }
+
