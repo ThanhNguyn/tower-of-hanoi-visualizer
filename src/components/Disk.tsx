@@ -172,6 +172,7 @@ export function Disk({
           e.stopPropagation();
           onClick?.();
         }
+      }}
       className={`absolute z-20 flex h-7 sm:h-8 items-center justify-center rounded-lg border select-none transition-shadow ${
         isSelected
           ? "ring-2 ring-sky-400 ring-offset-2 ring-offset-[#0c0d12] z-30"
