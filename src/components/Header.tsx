@@ -16,9 +16,9 @@ const modes: Array<{
   description: string;
   icon: typeof Swords;
 }> = [
-  { id: "play", label: "Chơi đố", description: "Tự tay giải đố Tháp Hà Nội", icon: Swords },
-  { id: "solve", label: "Mô phỏng", description: "Xem thuật toán tự động giải từng bước", icon: PlayCircle },
-  { id: "learn", label: "Thuật toán", description: "Khám phá bản chất đệ quy & độ phức tạp", icon: GraduationCap }
+  { id: "play", label: "Play", description: "Solve the puzzle manually", icon: Swords },
+  { id: "solve", label: "Solve", description: "Watch automated algorithm simulation", icon: PlayCircle },
+  { id: "learn", label: "Learn", description: "Deep-dive into recursion & complexity", icon: GraduationCap }
 ];
 
 export function Header({
@@ -41,21 +41,21 @@ export function Header({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-[-0.035em] text-white sm:text-2xl">
-              Trò Chơi Tháp Hà Nội
+              Tower of Hanoi Visualizer
             </h1>
             <span className="rounded bg-copper-400/20 px-2 py-0.5 text-[10px] font-mono font-semibold text-copper-300 border border-copper-400/30">
               DSA Visualizer
             </span>
           </div>
           <p className="mt-0.5 text-xs sm:text-sm text-slate-400">
-            Khám phá trực quan vẻ đẹp của đệ quy, vòng lặp và mã Gray qua trò chơi toán học kinh điển.
+            Explore the mathematics of recursion, iterative state machines, and Gray codes.
           </p>
         </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
         {/* Mode Navigation */}
-        <nav aria-label="Chế độ học tập" className="instrument-well flex items-center p-1">
+        <nav aria-label="Learning mode" className="instrument-well flex items-center p-1">
           {modes.map((item) => {
             const Icon = item.icon;
             const isActive = item.id === mode;
@@ -81,10 +81,10 @@ export function Header({
           className="control-button border-white/[0.12] bg-white/[0.04] text-slate-200 hover:text-white"
           onClick={onOpenRules}
           type="button"
-          title="Xem luật chơi và truyền thuyết 64 đĩa vàng"
+          title="View game rules and the legend of 64 golden disks"
         >
           <BookOpen size={16} className="text-copper-400" />
-          <span className="hidden sm:inline">Luật chơi</span>
+          <span className="hidden sm:inline">Rules & Guide</span>
         </button>
 
         {/* Audio Mute Toggle */}
@@ -92,8 +92,8 @@ export function Header({
           className="control-button control-button-quiet text-slate-400 hover:text-white"
           onClick={onToggleSound}
           type="button"
-          title={isMuted ? "Bật âm thanh" : "Tắt âm thanh"}
-          aria-label={isMuted ? "Bật âm thanh" : "Tắt âm thanh"}
+          title={isMuted ? "Unmute sound" : "Mute sound"}
+          aria-label={isMuted ? "Unmute sound" : "Mute sound"}
         >
           {isMuted ? <VolumeX size={17} className="text-signal-red" /> : <Volume2 size={17} className="text-signal-green" />}
         </button>
@@ -103,10 +103,10 @@ export function Header({
           className="control-button control-button-quiet text-slate-300 hover:text-white"
           onClick={onReset}
           type="button"
-          title="Đặt lại toàn bộ trạng thái"
+          title="Reset entire state"
         >
           <RotateCcw aria-hidden="true" size={16} />
-          <span className="hidden sm:inline">Đặt lại</span>
+          <span className="hidden sm:inline">Reset</span>
         </button>
       </div>
     </header>

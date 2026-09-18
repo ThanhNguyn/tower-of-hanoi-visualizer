@@ -22,8 +22,8 @@ export function GameControls({
   onHint,
   onReset
 }: GameControlsProps) {
-  const isError = message?.startsWith("Nước đi không") || message?.startsWith("Invalid");
-  const isHint = message?.startsWith("Gợi ý");
+  const isError = message?.startsWith("Invalid");
+  const isHint = message?.startsWith("Hint");
 
   const minutes = Math.floor(elapsedSeconds / 60);
   const seconds = elapsedSeconds % 60;
@@ -35,14 +35,14 @@ export function GameControls({
         <div className="flex items-center gap-4">
           <div>
             <h2 className="text-sm font-semibold text-white" id="manual-controls-title">
-              Bảng điều khiển chơi
+              Manual controls
             </h2>
             <p className="mt-0.5 text-xs text-slate-400">
               {isSolved
-                ? "Đã giải xong! Hãy đặt lại để thử thách số đĩa mới."
+                ? "Puzzle solved! Reset to try another disk count."
                 : selectedRod
-                ? `Cọc ${selectedRod} đã được chọn. Hãy nhấp vào cọc muốn đặt sang.`
-                : "Nhấp để chọn cọc hoặc kéo đĩa trên cùng sang cọc khác."}
+                ? `Rod ${selectedRod} selected. Choose destination rod.`
+                : "Select a rod to pick up its top disk, or drag it directly to another rod."}
             </p>
           </div>
 
@@ -59,10 +59,10 @@ export function GameControls({
             className="control-button border-amber-400/30 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20"
             onClick={onHint}
             type="button"
-            title="Nhận gợi ý nước đi tối ưu tiếp theo"
+            title="Get next optimal move hint"
           >
             <Lightbulb size={15} />
-            Gợi ý
+            Hint
           </button>
 
           <button
@@ -70,20 +70,20 @@ export function GameControls({
             disabled={moveCount === 0 || isSolved}
             onClick={onUndo}
             type="button"
-            title="Hoàn tác nước đi gần nhất"
+            title="Undo last move (Ctrl+Z)"
           >
             <Undo2 size={15} />
-            Đi lại
+            Undo
           </button>
 
           <button
             className="control-button control-button-quiet text-slate-300"
             onClick={onReset}
             type="button"
-            title="Đặt lại ván chơi"
+            title="Reset puzzle"
           >
             <RotateCcw size={15} />
-            Đặt lại
+            Reset
           </button>
         </div>
       </div>
@@ -108,7 +108,7 @@ export function GameControls({
         ) : (
           <MousePointer2 aria-hidden="true" className="shrink-0 text-slate-400" size={16} />
         )}
-        <span>{message ?? "Quy tắc: Mỗi lần chỉ chuyển 1 đĩa trên cùng; đĩa lớn không được đặt trên đĩa nhỏ."}</span>
+        <span>{message ?? "Rule: Only move the top disk of a rod; a larger disk cannot be placed on a smaller disk."}</span>
       </div>
     </section>
   );

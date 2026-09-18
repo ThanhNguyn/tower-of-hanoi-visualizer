@@ -110,15 +110,15 @@ export default function App() {
             disabled={mode !== "play" && sim.isPlaying}
           />
           <div className="hidden lg:flex items-center gap-3 text-xs font-mono text-slate-400">
-            <span className="text-slate-500">Phím tắt:</span>
+            <span className="text-slate-500">Shortcuts:</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">Space</kbd>
-            <span>Chạy/Dừng</span>
+            <span>Play/Pause</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">← / →</kbd>
-            <span>Tiến/Lùi</span>
+            <span>Step</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">R</kbd>
-            <span>Đặt lại</span>
+            <span>Reset</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">Ctrl+Z</kbd>
-            <span>Đi lại</span>
+            <span>Undo</span>
           </div>
         </div>
 
@@ -212,7 +212,7 @@ export default function App() {
               activeStack={mode === "play" ? [] : sim.activeStack}
               stepExplanation={
                 mode === "play"
-                  ? game.errorMessage ?? (game.moveHistory.length > 0 ? game.moveHistory[game.moveHistory.length - 1].explanation : "Thực hiện nước đi hợp lệ để chuyển toàn bộ đĩa sang Cọc C.")
+                  ? game.errorMessage ?? (game.moveHistory.length > 0 ? game.moveHistory[game.moveHistory.length - 1].explanation : "Make legal moves to transfer all disks from Source to Target.")
                   : sim.stepExplanation
               }
             />

@@ -89,7 +89,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
 
       const validation = validateMove(rods[from], rods[to]);
       if (!validation.valid) {
-        triggerShake(to, validation.reason ?? "Nước đi không hợp lệ.");
+        triggerShake(to, validation.reason ?? "Invalid move.");
         return false;
       }
 
@@ -105,7 +105,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
         from,
         to,
         moveIndex: nextMoveCount,
-        explanation: `Chuyển Đĩa ${movingDisk} từ Cọc ${from} sang Cọc ${to}.`
+        explanation: `Moved Disk ${movingDisk} from Rod ${from} to Rod ${to}.`
       };
 
       setRods(nextRods);
@@ -128,7 +128,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     (rod: Rod) => {
       if (selectedRod === null) {
         if (rods[rod].length === 0) {
-          triggerShake(rod, `Cọc ${rod} không có đĩa nào để di chuyển.`);
+          triggerShake(rod, `Rod ${rod} has no disks to move.`);
           return;
         }
         sound.playPickup();
@@ -150,7 +150,6 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     if (moveHistory.length === 0) return;
     const lastMove = moveHistory[moveHistory.length - 1];
 
-    // Reverse the move: lastMove.to -> lastMove.from
     const nextRods = applyMove(rods, lastMove.to, lastMove.from);
     sound.playPickup();
 
@@ -167,9 +166,9 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     if (hint) {
       sound.playPickup();
       setHintMove(hint);
-      setErrorMessage(`Gợi ý: ${hint.reason}`);
+      setErrorMessage(`Hint: ${hint.reason}`);
     } else {
-      setErrorMessage("Câu đố đã được hoàn thành!");
+      setErrorMessage("Puzzle has already been solved!");
     }
   }, [rods, diskCount]);
 

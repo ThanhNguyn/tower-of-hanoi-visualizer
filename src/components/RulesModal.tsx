@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 interface RulesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  lang?: "vi" | "en";
 }
 
 export function RulesModal({ isOpen, onClose }: RulesModalProps) {
@@ -39,14 +38,14 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
             <div className="flex items-center gap-2.5">
               <BookOpen className="text-copper-400" size={20} />
               <h2 className="text-base font-semibold text-white">
-                Hướng Dẫn & Luật Chơi Tháp Hà Nội
+                Tower of Hanoi Rules & Guide
               </h2>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="rounded-lg p-1 text-slate-400 hover:bg-white/[0.06] hover:text-white transition"
-              aria-label="Đóng"
+              aria-label="Close"
             >
               <X size={18} />
             </button>
@@ -63,7 +62,7 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                   : "border-transparent text-slate-400 hover:text-slate-200"
               }`}
             >
-              Luật Chơi Cơ Bản
+              Game Rules
             </button>
             <button
               type="button"
@@ -74,7 +73,7 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                   : "border-transparent text-slate-400 hover:text-slate-200"
               }`}
             >
-              3 Cách Giải Kinh Điển
+              Solving Paradigms
             </button>
             <button
               type="button"
@@ -85,7 +84,7 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                   : "border-transparent text-slate-400 hover:text-slate-200"
               }`}
             >
-              Truyền Thuyết 64 Đĩa Vàng
+              Legend of Brahma
             </button>
           </div>
 
@@ -95,27 +94,27 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
               <div className="space-y-4">
                 <div className="rounded-xl border border-copper-400/20 bg-copper-400/10 p-4">
                   <h3 className="font-semibold text-copper-200 flex items-center gap-2 mb-1">
-                    <Lightbulb size={16} /> Mục Tiêu Trò Chơi
+                    <Lightbulb size={16} /> Objective
                   </h3>
                   <p className="text-xs text-slate-200 leading-relaxed">
-                    Di chuyển toàn bộ <strong className="text-white">N đĩa</strong> từ{" "}
-                    <strong className="text-copper-300">Cọc A (Nguồn)</strong> sang{" "}
-                    <strong className="text-signal-green">Cọc C (Đích)</strong>, sử dụng{" "}
-                    <strong className="text-slate-300">Cọc B (Trung gian)</strong> làm trạm đệm.
+                    Transfer all <strong className="text-white">N disks</strong> from{" "}
+                    <strong className="text-copper-300">Rod A (Source)</strong> to{" "}
+                    <strong className="text-signal-green">Rod C (Target)</strong>, using{" "}
+                    <strong className="text-slate-300">Rod B (Auxiliary)</strong> as intermediate buffer.
                   </p>
                 </div>
 
                 <div className="space-y-2.5">
                   <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                    3 Quy Tắc Bất Di Bất Dịch
+                    The 3 Canonical Rules
                   </h4>
 
                   <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3.5">
                     <CheckCircle className="text-signal-green shrink-0 mt-0.5" size={18} />
                     <div>
-                      <strong className="text-white block mb-0.5">Quy tắc 1: Mỗi lần chỉ chuyển 1 đĩa</strong>
+                      <strong className="text-white block mb-0.5">Rule 1: Only one disk moved at a time</strong>
                       <p className="text-xs text-slate-400">
-                        Chỉ được nhấc và di chuyển một chiếc đĩa đơn lẻ trong mỗi lượt đi.
+                        You may only move a single disk during each turn.
                       </p>
                     </div>
                   </div>
@@ -123,9 +122,9 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                   <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3.5">
                     <CheckCircle className="text-signal-green shrink-0 mt-0.5" size={18} />
                     <div>
-                      <strong className="text-white block mb-0.5">Quy tắc 2: Chỉ lấy đĩa trên cùng</strong>
+                      <strong className="text-white block mb-0.5">Rule 2: Only the top disk can be moved</strong>
                       <p className="text-xs text-slate-400">
-                        Chỉ chiếc đĩa nằm ở vị trí cao nhất của một cọc mới có thể được nhấc ra.
+                        Disks cannot be extracted from beneath other disks; only the topmost disk of any rod is movable.
                       </p>
                     </div>
                   </div>
@@ -133,18 +132,18 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                   <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3.5">
                     <CheckCircle className="text-signal-green shrink-0 mt-0.5" size={18} />
                     <div>
-                      <strong className="text-white block mb-0.5">Quy tắc 3: Đĩa lớn không đặt trên đĩa nhỏ</strong>
+                      <strong className="text-white block mb-0.5">Rule 3: No larger disk on smaller disk</strong>
                       <p className="text-xs text-slate-400">
-                        Một chiếc đĩa chỉ có thể đặt vào cọc trống hoặc đặt lên trên một chiếc đĩa LỚN HƠN nó.
+                        A disk may only be placed either onto an empty rod or on top of a larger disk.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.06] bg-black/30 p-3.5 text-xs text-slate-400">
-                  <span className="font-mono text-copper-300 font-semibold">Công thức tối ưu:</span>{" "}
-                  Số bước ít nhất để hoàn thành trò chơi với N đĩa luôn bằng{" "}
-                  <code className="font-mono font-bold text-signal-green">2ⁿ - 1</code> bước.
+                  <span className="font-mono text-copper-300 font-semibold">Minimal Optimal Moves:</span>{" "}
+                  Solving Tower of Hanoi with N disks always requires exactly{" "}
+                  <code className="font-mono font-bold text-signal-green">2ⁿ - 1</code> moves.
                 </div>
               </div>
             )}
@@ -154,30 +153,30 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-2">
                   <h4 className="font-semibold text-white flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-signal-blue" />
-                    1. Phương pháp Đệ quy (Divide & Conquer)
+                    1. Recursive Algorithm (Divide & Conquer)
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Chia bài toán N đĩa thành: (1) Chuyển N-1 đĩa sang cọc phụ; (2) Chuyển đĩa lớn nhất sang đích; (3) Chuyển N-1 đĩa từ cọc phụ về đích. Cực kỳ thanh lịch, dùng ngăn xếp bộ nhớ O(N).
+                    Decomposes problem into: (1) Move top N-1 disks to Auxiliary; (2) Move largest disk N directly to Target; (3) Move N-1 disks from Auxiliary to Target. Elegant, requiring O(N) call stack space.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-2">
                   <h4 className="font-semibold text-white flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-copper-400" />
-                    2. Phương pháp Vòng lặp (Bán chu kỳ / Modulo)
+                    2. Iterative Algorithm (Alternating Strategy)
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Không dùng đệ quy. Luân phiên: Ở bước lẻ di chuyển đĩa nhỏ nhất theo vòng tròn A → B → C (hoặc A → C → B tùy số đĩa chẵn hay lẻ). Ở bước chẵn, chỉ có đúng một nước đi hợp lệ duy nhất giữa 2 cọc còn lại!
+                    Stackless execution: On odd turns, cycle smallest Disk 1 (A → B → C if N even, or A → C → B if N odd). On even turns, make the single legal move possible between the two remaining rods. Requires O(1) space!
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-2">
                   <h4 className="font-semibold text-white flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-signal-green" />
-                    3. Phương pháp Nhị phân & Mã Gray (Bitwise)
+                    3. Binary & Gray Code (Bitwise Counter)
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Đếm số từ 1 đến 2ⁿ - 1 dưới dạng nhị phân. Ở bước thứ k, đĩa được di chuyển chính là vị trí của bit 1 thấp nhất (`ctz(k) + 1`). Đây là một trong những ứng dụng toán học kỳ thú nhất của mã Gray!
+                    Count from 1 to 2ⁿ - 1 in binary. At step k, the disk to move is determined by the lowest 1-bit (`ctz(k) + 1`). This establishes an isomorphism between the Tower of Hanoi, Gray codes, and the Sierpiński triangle!
                   </p>
                 </div>
               </div>
@@ -187,17 +186,17 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
               <div className="space-y-3">
                 <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
                   <h4 className="font-semibold text-copper-300 flex items-center gap-2">
-                    <Sparkles size={16} /> Truyền Thuyết Đền Benares
+                    <Sparkles size={16} /> The Legend of Brahma's Temple
                   </h4>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Theo truyền thuyết cổ Ấn Độ, tại ngôi đền thần thánh ở Varanasi (Benares), thần Brahma đã cắm ba chiếc kim kim cương trên một đế đồng và xỏ vào đó <strong className="text-white">64 chiếc đĩa bằng vàng ròng</strong>, xếp từ lớn đến nhỏ.
+                    According to ancient legend, in a temple at Kashi Vishwanath (Varanasi), Hindu priests were assigned by Brahma to transfer <strong className="text-white">64 sacred golden disks</strong> across three diamond needles according to the immutable rules.
                   </p>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Các nhà sư ngày đêm chuyển các đĩa theo đúng 3 luật nghiêm ngặt. Lời sấm truyền rằng: khi đĩa vàng thứ 64 được đặt vào cọc đích thành công, ngôi đền sẽ sụp đổ thành cát bụi và ngày tàn của thế giới sẽ bắt đầu.
+                    Prophecy holds that when the 64th golden disk is placed on the destination needle, the temple will crumble into dust and the universe will reach its end.
                   </p>
                   <div className="rounded-lg bg-black/40 p-3 font-mono text-xs text-signal-green border border-white/[0.08]">
-                    Số bước = 2⁶⁴ - 1 = 18,446,744,073,709,551,615 bước.<br />
-                    Nếu mỗi giây chuyển được 1 đĩa không nghỉ, cần khoảng <strong>584.9 tỷ năm</strong> (gấp 42 lần tuổi thọ vũ trụ hiện tại)!
+                    Total moves = 2⁶⁴ - 1 = 18,446,744,073,709,551,615 steps.<br />
+                    At 1 move per second nonstop, completing it requires approximately <strong>584.9 billion years</strong> (42× the age of our universe)!
                   </div>
                 </div>
               </div>
@@ -211,7 +210,7 @@ export function RulesModal({ isOpen, onClose }: RulesModalProps) {
               onClick={onClose}
               className="control-button control-button-primary px-5 py-1.5 text-xs"
             >
-              Đã hiểu, bắt đầu chơi!
+              Got it, let's play!
             </button>
           </div>
         </motion.div>

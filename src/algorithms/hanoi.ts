@@ -45,7 +45,7 @@ export function validateMove(
   toDisks: number[]
 ): { valid: boolean; reason?: string } {
   if (fromDisks.length === 0) {
-    return { valid: false, reason: "Cọc nguồn không có đĩa nào để di chuyển." };
+    return { valid: false, reason: "Source rod has no disks to move." };
   }
   const diskToMove = fromDisks[fromDisks.length - 1];
   if (toDisks.length > 0) {
@@ -53,7 +53,7 @@ export function validateMove(
     if (diskToMove > topDestDisk) {
       return {
         valid: false,
-        reason: `Nước đi không hợp lệ: Đĩa ${diskToMove} lớn hơn Đĩa ${topDestDisk}. Đĩa lớn không được đặt trên đĩa nhỏ.`
+        reason: `Invalid move: Disk ${diskToMove} is larger than Disk ${topDestDisk}. Larger disks cannot be placed on smaller disks.`
       };
     }
   }
@@ -107,7 +107,7 @@ export function solveHanoiRecursive(n: number, target: Rod = "C"): HanoiMove[] {
         to: dest,
         moveIndex: moveCounter,
         callId: `${callPath}-base`,
-        explanation: `Base case (n=1): Chuyển trực tiếp Đĩa 1 từ ${source} sang ${dest}.`
+        explanation: `Base case (n=1): Move Disk 1 directly from ${source} to ${dest}.`
       });
       return;
     }
@@ -122,7 +122,7 @@ export function solveHanoiRecursive(n: number, target: Rod = "C"): HanoiMove[] {
       to: dest,
       moveIndex: moveCounter,
       callId: `${callPath}-mid`,
-      explanation: `Bước đệ quy: Chuyển Đĩa lớn ${diskCount} từ ${source} sang ${dest}.`
+      explanation: `Recursive step: Move Disk ${diskCount} from ${source} to ${dest}.`
     });
 
     hanoi(diskCount - 1, auxiliary, source, dest, `${callPath}.R`);
@@ -134,7 +134,7 @@ export function solveHanoiRecursive(n: number, target: Rod = "C"): HanoiMove[] {
 
 /**
  * 2. Iterative Solver (State Machine / Alternating Smallest Disk)
- * Avoids recursion stack completely, O(1) space.
+ * Avoids recursion stack completely, O(1) auxiliary space.
  */
 export function solveHanoiIterative(n: number, target: Rod = "C"): HanoiMove[] {
   const moves: HanoiMove[] = [];
@@ -171,7 +171,7 @@ export function solveHanoiIterative(n: number, target: Rod = "C"): HanoiMove[] {
         from: disk1Rod,
         to: nextRod,
         moveIndex: step,
-        explanation: `Vòng lặp (bước lẻ): Luân chuyển Đĩa nhỏ nhất (1) từ ${disk1Rod} sang ${nextRod}.`
+        explanation: `Iterative (Odd step): Cycle smallest Disk 1 from ${disk1Rod} to ${nextRod}.`
       });
 
       disk1Rod = nextRod;
@@ -214,7 +214,7 @@ export function solveHanoiIterative(n: number, target: Rod = "C"): HanoiMove[] {
         from,
         to,
         moveIndex: step,
-        explanation: `Vòng lặp (bước chẵn): Thực hiện nước đi hợp lệ duy nhất giữa 2 cọc còn lại (${from} → ${to}, Đĩa ${movingDisk}).`
+        explanation: `Iterative (Even step): Make the only legal move between other rods (${from} → ${to}, Disk ${movingDisk}).`
       });
     }
   }
@@ -233,10 +233,6 @@ export function solveHanoiBinary(n: number, target: Rod = "C"): HanoiMove[] {
 
   const aux: Rod = (RODS.find((r) => r !== "A" && r !== target) ?? "B") as Rod;
 
-  // Cycles:
-  // When target is C (standard):
-  // If n is odd: odd disks cycle A -> C -> B -> A, even disks cycle A -> B -> C -> A
-  // If n is even: odd disks cycle A -> B -> C -> A, even disks cycle A -> C -> B -> A
   const cycleClockwise: Rod[] = ["A", target, aux];
   const cycleCounterClockwise: Rod[] = ["A", aux, target];
 
@@ -280,7 +276,7 @@ export function solveHanoiBinary(n: number, target: Rod = "C"): HanoiMove[] {
       from: fromRod,
       to: toRod,
       moveIndex: k,
-      explanation: `Nhị phân bước ${k} (nhị phân: ${k.toString(2)}): Bit 1 thấp nhất ở vị trí ${disk} → Chuyển Đĩa ${disk} từ ${fromRod} sang ${toRod}.`
+      explanation: `Binary Step ${k} (${k.toString(2)}₂): Least significant 1-bit at index ${disk} → Move Disk ${disk} from ${fromRod} to ${toRod}.`
     });
   }
 
@@ -324,7 +320,7 @@ export function generateExecutionTrace(n: number, target: Rod = "C"): ExecutionS
     ],
     rods: cloneRods(currentRods),
     activeCallId: "call-root",
-    explanation: `Trạng thái ban đầu: ${n} đĩa trên Cọc A. Mục tiêu: Chuyển toàn bộ sang Cọc ${target}.`
+    explanation: `Initial configuration: ${n} disks on Rod A (Source). Goal: Transfer all to Rod ${target}.`
   });
 
   const activeStack: CallStackFrame[] = [];
@@ -365,12 +361,12 @@ export function generateExecutionTrace(n: number, target: Rod = "C"): ExecutionS
           to: dest,
           moveIndex: moveCounter,
           callId: frameId,
-          explanation: `Bước cơ sở (n=1): Chuyển Đĩa 1 từ ${source} sang ${dest}.`
+          explanation: `Base case (n=1): Move Disk 1 directly from ${source} to ${dest}.`
         },
         stack: activeStack.map((f) => ({ ...f })),
         rods: cloneRods(currentRods),
         activeCallId: frameId,
-        explanation: `Độ sâu đệ quy ${depth}: Đĩa 1 được đặt trực tiếp từ ${source} vào ${dest}.`
+        explanation: `Recursion depth ${depth}: Disk 1 placed directly from ${source} onto ${dest}.`
       });
 
       activeStack.pop();
@@ -393,12 +389,12 @@ export function generateExecutionTrace(n: number, target: Rod = "C"): ExecutionS
         to: dest,
         moveIndex: moveCounter,
         callId: frameId,
-        explanation: `Chuyển Đĩa ${k} từ ${source} sang ${dest}.`
+        explanation: `Move Disk ${k} from ${source} to ${dest}.`
       },
       stack: activeStack.map((f) => ({ ...f })),
       rods: cloneRods(currentRods),
       activeCallId: frameId,
-      explanation: `Độ sâu đệ quy ${depth}: Đã dọn ${k - 1} đĩa trên sang cọc đệm ${auxiliary}, nay chuyển Đĩa lớn ${k} sang ${dest}.`
+      explanation: `Recursion depth ${depth}: Transferred top ${k - 1} disks to buffer ${auxiliary}, now moving largest Disk ${k} to ${dest}.`
     });
 
     currentFrame.stage = "right-child";
@@ -440,14 +436,12 @@ export function getNextOptimalMove(
     return null;
   }
 
-  // Helper to find which rod holds a disk
   function findRodOfDisk(d: number): Rod {
     if (rods.A.includes(d)) return "A";
     if (rods.B.includes(d)) return "B";
     return "C";
   }
 
-  // Recursive goal resolver: to move disks 1..k to destination dest
   function solveSubgoal(k: number, dest: Rod): { from: Rod; to: Rod; disk: number; reason: string } | null {
     if (k === 0) return null;
     const currentRod = findRodOfDisk(k);
@@ -457,9 +451,6 @@ export function getNextOptimalMove(
 
     const otherRod = RODS.find((r) => r !== currentRod && r !== dest) as Rod;
 
-    // To move disk k from currentRod to dest:
-    // All disks 1..k-1 must be on otherRod
-    // Check if disks 1..k-1 are already all on otherRod
     let allOthersOnOther = true;
     for (let i = 1; i < k; i++) {
       if (findRodOfDisk(i) !== otherRod) {
@@ -469,16 +460,14 @@ export function getNextOptimalMove(
     }
 
     if (allOthersOnOther) {
-      // Disk k can move directly to dest!
       return {
         from: currentRod,
         to: dest,
         disk: k,
-        reason: `Chuyển Đĩa ${k} từ Cọc ${currentRod} sang Cọc ${dest} để tiến về đích.`
+        reason: `Move Disk ${k} from Rod ${currentRod} to Rod ${dest} towards the goal.`
       };
     }
 
-    // Need to move disks 1..k-1 to otherRod first
     return solveSubgoal(k - 1, otherRod);
   }
 
