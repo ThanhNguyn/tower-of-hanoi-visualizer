@@ -5,3 +5,5 @@ dist
 .impeccable/review/
 .impeccable/build/
 .impeccable/mocks/
+.claude/
+.codex/

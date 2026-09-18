@@ -8,9 +8,5 @@ export default defineConfig({
     process.env.GITHUB_ACTIONS === "true"
       ? `/${repositoryName}/`
       : (process.env.VITE_BASE_PATH ?? "/"),
-  plugins: [react()],
-  test: {
-    environment: "jsdom",
-    globals: true
-  }
+  plugins: [react()]
 });
