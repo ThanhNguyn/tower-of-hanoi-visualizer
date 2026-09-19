@@ -24,8 +24,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ["Archivo", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "monospace"]
+        sans: ["'Be Vietnam Pro'", "Archivo", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["'IBM Plex Mono'", "ui-monospace", "SFMono-Regular", "monospace"]
       },
       boxShadow: {
         panel: "0 18px 42px -28px rgba(0, 0, 0, 0.92)",

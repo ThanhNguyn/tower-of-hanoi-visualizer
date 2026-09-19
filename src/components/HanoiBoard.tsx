@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { HanoiRods, Rod as RodType } from "../types/hanoi";
 import { Disk } from "./Disk";
 import { sound } from "../utils/audio";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface HanoiBoardProps {
   rods: HanoiRods;
@@ -21,12 +22,6 @@ const ROD_CENTERS: Record<RodType, number> = {
   C: 83.333
 };
 
-const ROD_CONFIGS: Array<{ id: RodType; label: string; role: string }> = [
-  { id: "A", label: "Peg A", role: "Source" },
-  { id: "B", label: "Peg B", role: "Auxiliary" },
-  { id: "C", label: "Peg C", role: "Target" }
-];
-
 export function HanoiBoard({
   rods,
   totalDisks,
@@ -38,6 +33,14 @@ export function HanoiBoard({
   onSelectRod,
   onDropDisk
 }: HanoiBoardProps) {
+  const { t } = useLanguage();
+
+  const rodConfigs = useMemo<Array<{ id: RodType; label: string; role: string }>>(() => [
+    { id: "A", label: t("pegA"), role: t("roleSource") },
+    { id: "B", label: t("pegB"), role: t("roleAuxiliary") },
+    { id: "C", label: t("pegC"), role: t("roleTarget") }
+  ], [t]);
+
   // Calculated vertical metrics guaranteeing zero overlap and comfortable breathing room
   const poleHeight = Math.max(180, totalDisks * 32 + 40);
   const hoverTopY = poleHeight + 36;
@@ -85,7 +88,7 @@ export function HanoiBoard({
 
       {/* Top Peg Identifiers (Clean, dignified, zero text collision) */}
       <div className="relative z-10 grid grid-cols-3 gap-4 mb-2">
-        {ROD_CONFIGS.map(({ id, label, role }) => {
+        {rodConfigs.map(({ id, label, role }) => {
           const isSelected = selectedRod === id;
           const isHintTarget = hintMove?.to === id;
           const count = rods[id].length;
@@ -102,16 +105,16 @@ export function HanoiBoard({
                   : "bg-white/[0.02] hover:bg-white/[0.04]"
               } ${isInteractive ? "cursor-pointer" : "cursor-default"}`}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-xs sm:text-sm text-slate-200">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+                <span className="font-semibold text-xs sm:text-sm text-slate-200 whitespace-nowrap">
                   {label}
                 </span>
-                <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
+                <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-mono text-slate-400 whitespace-nowrap">
                   {role}
                 </span>
               </div>
               <span className="mt-0.5 font-mono text-[11px] text-slate-500">
-                {count} {count === 1 ? "disk" : "disks"}
+                {count} {count === 1 ? t("diskSingular") : t("diskPlural")}
               </span>
             </div>
           );
@@ -120,7 +123,7 @@ export function HanoiBoard({
 
       {/* Interactive Peg Zones and Poles */}
       <div className="absolute inset-x-6 top-20 bottom-10 grid grid-cols-3 gap-4 pointer-events-none">
-        {ROD_CONFIGS.map(({ id }) => {
+        {rodConfigs.map(({ id }) => {
           const isSelected = selectedRod === id;
           const isShaking = shakeRod === id;
           const isHintTarget = hintMove?.to === id;

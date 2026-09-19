@@ -10,6 +10,7 @@ import {
   Undo2
 } from "lucide-react";
 import type { AlgorithmType, Rod } from "../types/hanoi";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface UnifiedControlsProps {
   // Manual game props
@@ -36,12 +37,6 @@ interface UnifiedControlsProps {
   onSpeedChange: (speed: number) => void;
 }
 
-const ALGORITHMS: Array<{ id: AlgorithmType; label: string; desc: string }> = [
-  { id: "recursive", label: "Recursive", desc: "Divide & Conquer O(2ⁿ), O(N) Call Stack" },
-  { id: "iterative", label: "Iterative", desc: "Modulo State Machine O(1) Space" },
-  { id: "binary", label: "Binary (Gray)", desc: "Gray Code & Bitwise Trailing Zeros" }
-];
-
 const SPEED_OPTIONS = [0.5, 1, 2, 4];
 
 export function UnifiedControls({
@@ -65,106 +60,114 @@ export function UnifiedControls({
   onLast,
   onSpeedChange
 }: UnifiedControlsProps) {
-  const isError = message?.startsWith("Invalid");
-  const isHint = message?.startsWith("Hint");
+  const { t } = useLanguage();
+
+  const algorithmsList = [
+    { id: "recursive" as AlgorithmType, label: t("algoRecursive"), desc: t("algoRecursiveDesc") },
+    { id: "iterative" as AlgorithmType, label: t("algoIterative"), desc: t("algoIterativeDesc") },
+    { id: "binary" as AlgorithmType, label: t("algoBinary"), desc: t("algoBinaryDesc") }
+  ];
+
+  const isError = message?.startsWith("Invalid") || message?.startsWith("Nước đi không hợp lệ");
+  const isHint = message?.startsWith("Hint") || message?.startsWith("Gợi ý");
 
   return (
     <section aria-label="Game and Solver Controls" className="rounded-2xl border border-white/[0.08] bg-[#0d0f15] p-4 shadow-xl space-y-3">
       {/* Tier 1: Primary Action Triggers (Manual & Playback) */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
         {/* Left: Manual Play Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20 active:scale-95 disabled:opacity-40"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20 active:scale-95 disabled:opacity-40 whitespace-nowrap"
             onClick={onHint}
             disabled={isSolved || isPlaying}
             type="button"
-            title="Highlight the next optimal move"
+            title={t("hintTitle")}
           >
             <Lightbulb size={14} />
-            <span>Hint</span>
+            <span>{t("hint")}</span>
           </button>
 
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-200 transition hover:bg-white/[0.08] hover:text-white active:scale-95 disabled:opacity-40"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-200 transition hover:bg-white/[0.08] hover:text-white active:scale-95 disabled:opacity-40 whitespace-nowrap"
             disabled={moveCount === 0 || isSolved || isPlaying}
             onClick={onUndo}
             type="button"
-            title="Undo last move (Ctrl+Z)"
+            title={t("undoTitle")}
           >
             <Undo2 size={14} />
-            <span>Undo</span>
+            <span>{t("undo")}</span>
           </button>
 
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] hover:text-white active:scale-95"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] hover:text-white active:scale-95 whitespace-nowrap"
             onClick={onReset}
             type="button"
-            title="Reset board to initial configuration (R)"
+            title={t("resetTitle")}
           >
             <RotateCcw size={14} />
-            <span>Reset</span>
+            <span>{t("reset")}</span>
           </button>
         </div>
 
         {/* Right: Auto-Solver Transport Playback Buttons */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           <button
-            aria-label="First step"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
+            aria-label={t("firstStep")}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
             disabled={step === 0}
             onClick={onFirst}
             type="button"
-            title="First step"
+            title={t("firstStep")}
           >
             <FastForward className="rotate-180" size={14} />
           </button>
 
           <button
-            aria-label="Previous step"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
+            aria-label={t("prevStep")}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
             disabled={step === 0}
             onClick={onPrevious}
             type="button"
-            title="Previous step (←)"
+            title={t("prevStep")}
           >
             <SkipBack size={14} />
           </button>
 
           {/* Auto Solve / Pause Play Button */}
           <button
-            aria-label={isPlaying ? "Pause simulation" : "Auto Solve simulation"}
-            className={`inline-flex h-9 items-center gap-2 rounded-lg px-4 text-xs font-bold transition shadow-md active:scale-95 ${
+            aria-label={isPlaying ? t("pauseTitle") : t("autoSolveTitle")}
+            className={`inline-flex h-9 items-center gap-2 rounded-lg px-3.5 sm:px-4 text-xs font-bold transition shadow-md active:scale-95 whitespace-nowrap shrink-0 ${
               isPlaying
                 ? "bg-amber-500 text-slate-950 hover:bg-amber-400"
                 : "bg-white text-slate-950 hover:bg-slate-200"
             }`}
             onClick={onTogglePlay}
             type="button"
-            title={isPlaying ? "Pause (Space)" : "Auto Solve (Space)"}
+            title={isPlaying ? t("pauseTitle") : t("autoSolveTitle")}
           >
             {isPlaying ? <Pause size={14} /> : <Play size={14} fill="currentColor" />}
-            <span>{isPlaying ? "Pause" : "Auto Solve"}</span>
+            <span>{isPlaying ? t("pause") : t("autoSolve")}</span>
           </button>
 
           <button
-            aria-label="Next step"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
+            aria-label={t("nextStep")}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
             disabled={step === totalSteps}
             onClick={onNext}
             type="button"
-            title="Next step (→)"
+            title={t("nextStep")}
           >
             <SkipForward size={14} />
           </button>
 
           <button
-            aria-label="Last step"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30"
+            aria-label={t("lastStep")}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
             disabled={step === totalSteps}
             onClick={onLast}
             type="button"
-            title="Last step"
+            title={t("lastStep")}
           >
             <FastForward size={14} />
           </button>
@@ -174,15 +177,15 @@ export function UnifiedControls({
       {/* Tier 2: Algorithm Selector, Status Prompt & Simulation Speed */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         {/* Algorithm selector pills */}
-        <div className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.02] p-1">
-          <Cpu size={14} className="text-amber-400 ml-1.5 mr-0.5" />
-          {ALGORITHMS.map((algo) => (
+        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.02] p-1">
+          <Cpu size={14} className="text-amber-400 ml-1.5 mr-0.5 shrink-0" />
+          {algorithmsList.map((algo) => (
             <button
               key={algo.id}
               type="button"
               onClick={() => onAlgorithmChange(algo.id)}
               title={algo.desc}
-              className={`rounded px-2.5 py-1 text-xs font-medium transition ${
+              className={`rounded px-2.5 py-1 text-xs font-medium transition whitespace-nowrap ${
                 algorithm === algo.id
                   ? "bg-amber-400/20 text-amber-300 font-semibold shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -196,15 +199,15 @@ export function UnifiedControls({
         {/* Dynamic status hint */}
         <span className="hidden md:inline text-xs text-slate-400">
           {isSolved
-            ? "🎉 Puzzle completed! Reset to play again."
+            ? t("statusSolved")
             : selectedRod
-            ? `Peg ${selectedRod} selected. Choose destination peg.`
-            : "Click a peg to move, or hit Auto Solve."}
+            ? t("statusSelected", { rod: selectedRod })
+            : t("statusIdle")}
         </span>
 
         {/* Speed Selector */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-slate-400 text-[11px]">Speed:</span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-slate-400 text-[11px] whitespace-nowrap">{t("speed")}</span>
           <div className="flex items-center rounded-lg border border-white/[0.08] bg-white/[0.02] p-0.5">
             {SPEED_OPTIONS.map((spd) => (
               <button

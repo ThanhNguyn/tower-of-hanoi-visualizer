@@ -1,3 +1,5 @@
+import { useLanguage } from "../i18n/LanguageContext";
+
 interface DiskSelectorProps {
   value: number;
   onChange: (value: number) => void;
@@ -7,11 +9,13 @@ interface DiskSelectorProps {
 const diskCounts = [3, 4, 5, 6, 7, 8];
 
 export function DiskSelector({ value, onChange, disabled = false }: DiskSelectorProps) {
+  const { t } = useLanguage();
+
   return (
     <fieldset className="flex items-center gap-3">
-      <legend className="sr-only">Choose number of disks</legend>
-      <span className="text-xs font-medium text-slate-400">Disks:</span>
-      <div aria-label="Choose number of disks" className="flex items-center gap-1.5" role="radiogroup">
+      <legend className="sr-only">{t("chooseDisks")}</legend>
+      <span className="text-xs font-medium text-slate-400 whitespace-nowrap">{t("disks")}</span>
+      <div aria-label={t("chooseDisks")} className="flex items-center gap-1.5" role="radiogroup">
         {diskCounts.map((count) => {
           const selected = count === value;
           return (

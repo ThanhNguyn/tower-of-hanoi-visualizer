@@ -3,6 +3,7 @@ import { useHanoiGame } from "./hooks/useHanoiGame";
 import { useHanoiSimulation } from "./hooks/useHanoiSimulation";
 import { getMinMovesToTarget } from "./algorithms/hanoi";
 import { sound } from "./utils/audio";
+import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 
 import { Header } from "./components/Header";
 import { DiskSelector } from "./components/DiskSelector";
@@ -16,7 +17,8 @@ import { MoveHistory } from "./components/MoveHistory";
 import { AlgorithmExplanation } from "./components/AlgorithmExplanation";
 import { RulesModal } from "./components/RulesModal";
 
-export default function App() {
+function VisualizerApp() {
+  const { t } = useLanguage();
   const [activeSource, setActiveSource] = useState<"manual" | "simulation">("manual");
   const [diskCount, setDiskCount] = useState<number>(4);
   const [isRulesOpen, setIsRulesOpen] = useState(false);
@@ -92,10 +94,37 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [sim, game, handleReset]);
 
+  // Compute active step explanation
+  const lastManualMove = game.moveHistory[game.moveHistory.length - 1];
+  const stepExplanation =
+    activeSource === "simulation"
+      ? sim.activeMove
+        ? t("movedDiskFromTo", {
+            disk: sim.activeMove.disk,
+            from: sim.activeMove.from,
+            to: sim.activeMove.to
+          })
+        : t("traceDefaultPrompt")
+      : game.errorMessage ??
+        (lastManualMove
+          ? t("movedDiskFromTo", {
+              disk: lastManualMove.disk,
+              from: lastManualMove.from,
+              to: lastManualMove.to
+            })
+          : t("traceDefaultPrompt"));
+
+  const algorithmName =
+    sim.algorithm === "recursive"
+      ? t("algoRecursive")
+      : sim.algorithm === "iterative"
+      ? t("algoIterative")
+      : t("algoBinary");
+
   return (
     <div className="min-h-screen px-4 pb-14 pt-4 sm:px-6 lg:px-8 text-[#f1f5f9]">
       <div className="mx-auto max-w-[1540px] space-y-5">
-        {/* Header with Brand, Rules & Audio Toggle */}
+        {/* Header with Brand, Rules, Audio Toggle & Language Switcher */}
         <Header
           isMuted={isMuted}
           onToggleSound={handleToggleSound}
@@ -113,16 +142,16 @@ export default function App() {
             }}
             disabled={sim.isPlaying}
           />
-          <div className="hidden lg:flex items-center gap-3 text-xs font-mono text-slate-400">
-            <span className="text-slate-500">Shortcuts:</span>
+          <div className="hidden lg:flex items-center gap-3 text-xs font-mono text-slate-400 flex-wrap">
+            <span className="text-slate-500">{t("shortcutsLabel")}</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">Space</kbd>
-            <span>Auto-Solve</span>
+            <span>{t("shortcutAutoSolve")}</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">← / →</kbd>
-            <span>Step</span>
+            <span>{t("shortcutStep")}</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">R</kbd>
-            <span>Reset</span>
+            <span>{t("shortcutReset")}</span>
             <kbd className="rounded border border-white/[0.1] bg-white/[0.04] px-1.5 py-0.5 text-slate-200">Ctrl+Z</kbd>
-            <span>Undo</span>
+            <span>{t("shortcutUndo")}</span>
           </div>
         </div>
 
@@ -216,13 +245,7 @@ export default function App() {
               elapsedSeconds={game.elapsedSeconds}
               progress={progress}
               isSimulating={activeSource === "simulation" && sim.isPlaying}
-              algorithmName={
-                sim.algorithm === "recursive"
-                  ? "Recursive"
-                  : sim.algorithm === "iterative"
-                  ? "Iterative"
-                  : "Binary Gray"
-              }
+              algorithmName={algorithmName}
               solved={isSolved}
             />
 
@@ -244,14 +267,7 @@ export default function App() {
                   : (game.moveHistory[game.moveHistory.length - 1] ?? null)
               }
               activeStack={activeSource === "simulation" ? sim.activeStack : []}
-              stepExplanation={
-                activeSource === "simulation"
-                  ? sim.stepExplanation
-                  : game.errorMessage ??
-                    (game.moveHistory.length > 0
-                      ? game.moveHistory[game.moveHistory.length - 1].explanation
-                      : "Make legal moves to transfer all disks from Peg A to Peg C.")
-              }
+              stepExplanation={stepExplanation}
             />
           </div>
           <div className="lg:col-span-5">
@@ -277,3 +293,10 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <LanguageProvider>
+      <VisualizerApp />
+    </LanguageProvider>
+  );
+}

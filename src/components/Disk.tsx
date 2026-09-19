@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import type { Rod as RodType } from "../types/hanoi";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface DiskProps {
   disk: number;
@@ -86,6 +87,7 @@ export function Disk({
   onClick,
   onDragStart
 }: DiskProps) {
+  const { t } = useLanguage();
   const targetBottom = 3 + currentSlot * 32;
   const targetLeft = rodCenters[currentRod];
 
@@ -213,8 +215,8 @@ export function Disk({
           ? "0 6px 20px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(251, 191, 36, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.45)"
           : "0 4px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -2px 0 rgba(0, 0, 0, 0.25)"
       }}
-      title={`Disk ${disk}${isTop ? " (Top disk)" : ""}`}
-      aria-label={`Disk ${disk} of size ${disk}`}
+      title={`${t("diskTooltip")} ${disk}${isTop ? ` ${t("topDisk")}` : ""}`}
+      aria-label={`${t("diskTooltip")} ${disk}`}
     >
       {/* Specular top-edge bevel highlight */}
       <div className="absolute inset-x-2 top-0.5 h-[1.5px] rounded-full bg-white/40 pointer-events-none" />

@@ -1,6 +1,7 @@
 import { Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import type { CallStackFrame } from "../types/hanoi";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface CallStackProps {
   stack: CallStackFrame[];
@@ -8,15 +9,17 @@ interface CallStackProps {
 }
 
 export function CallStack({ stack, maxDepth }: CallStackProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="instrument-panel overflow-hidden">
       <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3.5">
         <div className="flex items-center gap-2">
           <Layers className="text-copper-400" size={16} />
-          <h2 className="text-sm font-semibold text-white">Call Stack</h2>
+          <h2 className="text-sm font-semibold text-white">{t("callStackTitle")}</h2>
         </div>
         <div className="flex items-center gap-1.5 font-mono text-xs text-slate-400">
-          <span>Depth:</span>
+          <span>{t("depth")}</span>
           <span className="font-semibold text-copper-300">
             {stack.length}
           </span>
@@ -29,7 +32,7 @@ export function CallStack({ stack, maxDepth }: CallStackProps) {
         {stack.length === 0 ? (
           <div className="flex h-28 items-center justify-center rounded-lg border border-dashed border-white/[0.08] p-4 text-center">
             <span className="font-mono text-xs text-slate-500">
-              Stack is empty (Simulation ready or completed)
+              {t("stackEmpty")}
             </span>
           </div>
         ) : (
@@ -73,11 +76,8 @@ export function CallStack({ stack, maxDepth }: CallStackProps) {
         )}
       </div>
 
-      <div className="border-t border-white/[0.06] bg-black/20 px-4 py-2.5 text-[11px] text-slate-400">
-        <p>
-          Each call pushes a frame with parameters <code className="font-mono text-copper-300">(n, src, aux, dst)</code>.
-          Returns pop the frame when base case moves complete.
-        </p>
+      <div className="border-t border-white/[0.06] bg-black/20 px-4 py-2.5 text-[11px] text-slate-400 leading-relaxed">
+        <p>{t("callStackExplanation")}</p>
       </div>
     </div>
   );

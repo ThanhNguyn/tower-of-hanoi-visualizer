@@ -8,6 +8,7 @@ import {
 } from "../algorithms/hanoi";
 import type { HanoiMove, HanoiRods, Rod } from "../types/hanoi";
 import { sound } from "../utils/audio";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface UseHanoiGameReturn {
   rods: HanoiRods;
@@ -27,6 +28,7 @@ interface UseHanoiGameReturn {
 }
 
 export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
+  const { t } = useLanguage();
   const [rods, setRods] = useState<HanoiRods>(() => generateInitialRods(diskCount));
   const [selectedRod, setSelectedRod] = useState<Rod | null>(null);
   const [moveCount, setMoveCount] = useState(0);
@@ -89,7 +91,13 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
 
       const validation = validateMove(rods[from], rods[to]);
       if (!validation.valid) {
-        triggerShake(to, validation.reason ?? "Invalid move.");
+        const diskToMove = rods[from][rods[from].length - 1];
+        const topDestDisk = rods[to].length > 0 ? rods[to][rods[to].length - 1] : 0;
+        const errorMsg =
+          topDestDisk > 0 && diskToMove > topDestDisk
+            ? t("invalidMoveLargerOnSmaller", { diskToMove, topDestDisk })
+            : t("invalidMoveEmptyRod");
+        triggerShake(to, errorMsg);
         return false;
       }
 
@@ -105,7 +113,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
         from,
         to,
         moveIndex: nextMoveCount,
-        explanation: `Moved Disk ${movingDisk} from Rod ${from} to Rod ${to}.`
+        explanation: t("movedDiskFromTo", { disk: movingDisk, from, to })
       };
 
       setRods(nextRods);
@@ -121,14 +129,14 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
 
       return true;
     },
-    [rods, moveCount, diskCount, triggerShake]
+    [rods, moveCount, diskCount, triggerShake, t]
   );
 
   const handleSelectRod = useCallback(
     (rod: Rod) => {
       if (selectedRod === null) {
         if (rods[rod].length === 0) {
-          triggerShake(rod, `Rod ${rod} has no disks to move.`);
+          triggerShake(rod, t("invalidMoveEmptyRod"));
           return;
         }
         sound.playPickup();
@@ -143,7 +151,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
         handleDirectMove(selectedRod, rod);
       }
     },
-    [selectedRod, rods, triggerShake, handleDirectMove]
+    [selectedRod, rods, triggerShake, handleDirectMove, t]
   );
 
   const undo = useCallback(() => {
@@ -166,11 +174,11 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     if (hint) {
       sound.playPickup();
       setHintMove(hint);
-      setErrorMessage(`Hint: ${hint.reason}`);
+      setErrorMessage(`${t("hintPrefix")} ${t("movedDiskFromTo", { disk: hint.disk, from: hint.from, to: hint.to })}`);
     } else {
-      setErrorMessage("Puzzle has already been solved!");
+      setErrorMessage(t("puzzleAlreadySolved"));
     }
-  }, [rods, diskCount]);
+  }, [rods, diskCount, t]);
 
   return {
     rods,

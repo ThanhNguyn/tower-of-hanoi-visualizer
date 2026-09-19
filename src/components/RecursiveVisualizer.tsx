@@ -1,5 +1,6 @@
 import { GitFork, ArrowDown } from "lucide-react";
 import type { CallStackFrame, HanoiMove } from "../types/hanoi";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface RecursiveVisualizerProps {
   diskCount: number;
@@ -14,6 +15,7 @@ export function RecursiveVisualizer({
   activeStack,
   stepExplanation
 }: RecursiveVisualizerProps) {
+  const { t } = useLanguage();
   const currentTopFrame = activeStack.length > 0 ? activeStack[activeStack.length - 1] : null;
 
   return (
@@ -21,10 +23,10 @@ export function RecursiveVisualizer({
       <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3.5">
         <div className="flex items-center gap-2">
           <GitFork className="text-copper-400" size={16} />
-          <h2 className="text-sm font-semibold text-white">Recursive Trace & Tree</h2>
+          <h2 className="text-sm font-semibold text-white">{t("traceTreeTitle")}</h2>
         </div>
         <span className="font-mono text-xs text-slate-400">
-          N = {diskCount} Disks
+          {t("disksCount", { count: diskCount })}
         </span>
       </div>
 
@@ -32,37 +34,42 @@ export function RecursiveVisualizer({
         {/* Active Recursive Step Banner */}
         <div className="rounded-xl border border-white/[0.08] bg-black/30 p-3.5">
           <div className="flex items-center justify-between text-xs font-mono">
-            <span className="field-label text-slate-400">Current Execution Frame</span>
+            <span className="field-label text-slate-400">{t("currentExecutionFrame")}</span>
             {currentTopFrame ? (
               <span className="text-copper-300 font-semibold">
-                Depth {currentTopFrame.depth}
+                {t("depthLabel", { depth: currentTopFrame.depth })}
               </span>
             ) : (
-              <span className="text-slate-500">Idle</span>
+              <span className="text-slate-500">{t("idle")}</span>
             )}
           </div>
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             {currentTopFrame ? (
               <code className="rounded bg-copper-400/15 px-2.5 py-1 text-xs font-mono font-semibold text-copper-300 border border-copper-400/30">
                 hanoi({currentTopFrame.n}, {currentTopFrame.source}, {currentTopFrame.auxiliary}, {currentTopFrame.target})
               </code>
             ) : (
-              <span className="text-sm text-slate-400 italic">No active frame</span>
+              <span className="text-sm text-slate-400 italic">{t("noActiveFrame")}</span>
             )}
             {activeMove && (
               <span className="text-xs font-mono text-signal-green bg-signal-green/10 border border-signal-green/20 px-2 py-1 rounded">
-                Move #{activeMove.moveIndex}: Disk {activeMove.disk} ({activeMove.from} → {activeMove.to})
+                {t("moveNumber", {
+                  moveIndex: activeMove.moveIndex,
+                  disk: activeMove.disk,
+                  from: activeMove.from,
+                  to: activeMove.to
+                })}
               </span>
             )}
           </div>
           <p className="mt-2 text-xs text-slate-300 leading-relaxed font-sans">
-            {stepExplanation || "Start the solver to trace the recursive decomposition in real-time."}
+            {stepExplanation || t("traceDefaultPrompt")}
           </p>
         </div>
 
         {/* Tree Decomposition Visual */}
         <div className="rounded-xl border border-white/[0.08] bg-ink-900/60 p-4">
-          <div className="text-xs font-mono field-label mb-3">Recursive Branching Model</div>
+          <div className="text-xs font-mono field-label mb-3">{t("branchingModelTitle")}</div>
           <div className="flex flex-col items-center space-y-2 text-xs font-mono">
             {/* Root Call */}
             <div className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-1.5 text-slate-200">
@@ -80,9 +87,9 @@ export function RecursiveVisualizer({
                     : "border-white/[0.08] bg-white/[0.02] text-slate-400"
                 }`}
               >
-                <div className="text-[10px] text-slate-500 mb-1">Step 1 (Left)</div>
+                <div className="text-[10px] text-slate-500 mb-1">{t("step1Left")}</div>
                 <div>hanoi({diskCount - 1}, A, C, B)</div>
-                <div className="text-[10px] text-slate-500 mt-1">Move n-1 to Aux</div>
+                <div className="text-[10px] text-slate-500 mt-1">{t("step1LeftDesc")}</div>
               </div>
 
               <div
@@ -92,9 +99,9 @@ export function RecursiveVisualizer({
                     : "border-white/[0.08] bg-white/[0.02] text-slate-400"
                 }`}
               >
-                <div className="text-[10px] text-slate-500 mb-1">Step 2 (Base/Mid)</div>
+                <div className="text-[10px] text-slate-500 mb-1">{t("step2Mid")}</div>
                 <div>Move Disk {diskCount} (A → C)</div>
-                <div className="text-[10px] text-slate-500 mt-1">Move largest to Goal</div>
+                <div className="text-[10px] text-slate-500 mt-1">{t("step2MidDesc")}</div>
               </div>
 
               <div
@@ -104,9 +111,9 @@ export function RecursiveVisualizer({
                     : "border-white/[0.08] bg-white/[0.02] text-slate-400"
                 }`}
               >
-                <div className="text-[10px] text-slate-500 mb-1">Step 3 (Right)</div>
+                <div className="text-[10px] text-slate-500 mb-1">{t("step3Right")}</div>
                 <div>hanoi({diskCount - 1}, B, A, C)</div>
-                <div className="text-[10px] text-slate-500 mt-1">Move n-1 to Goal</div>
+                <div className="text-[10px] text-slate-500 mt-1">{t("step3RightDesc")}</div>
               </div>
             </div>
           </div>

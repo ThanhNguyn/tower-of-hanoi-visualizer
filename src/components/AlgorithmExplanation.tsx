@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { BookOpen, Calculator, Cpu, Sparkles } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface AlgorithmExplanationProps {
   currentDisks: number;
 }
 
 export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps) {
+  const { t, locale } = useLanguage();
   const [activeTab, setActiveTab] = useState<"recursive" | "iterative" | "binary">("recursive");
   const minMoves = Math.pow(2, currentDisks) - 1;
 
@@ -15,44 +17,44 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
         <div className="flex items-center gap-2">
           <BookOpen className="text-copper-400" size={20} />
           <h2 id="algorithm-heading" className="section-heading">
-            Deep-Dive into Algorithm Paradigms
+            {t("deepDiveTitle")}
           </h2>
         </div>
 
         {/* Algorithm Strategy Switcher */}
-        <div className="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 p-1 text-xs">
+        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/[0.08] bg-black/40 p-1 text-xs">
           <button
             type="button"
             onClick={() => setActiveTab("recursive")}
-            className={`px-3 py-1 rounded transition ${
+            className={`px-3 py-1 rounded transition whitespace-nowrap ${
               activeTab === "recursive"
                 ? "bg-copper-400/20 text-copper-300 font-semibold shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            1. Recursive (Divide & Conquer)
+            {t("tabRecursive")}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("iterative")}
-            className={`px-3 py-1 rounded transition ${
+            className={`px-3 py-1 rounded transition whitespace-nowrap ${
               activeTab === "iterative"
                 ? "bg-copper-400/20 text-copper-300 font-semibold shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            2. Iterative (State Machine)
+            {t("tabIterative")}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("binary")}
-            className={`px-3 py-1 rounded transition ${
+            className={`px-3 py-1 rounded transition whitespace-nowrap ${
               activeTab === "binary"
                 ? "bg-copper-400/20 text-copper-300 font-semibold shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            3. Binary (Gray Code)
+            {t("tabBinary")}
           </button>
         </div>
       </div>
@@ -65,10 +67,10 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
               <div className="instrument-panel p-5 space-y-3">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-signal-blue" />
-                  Base Case (n = 1)
+                  {t("baseCaseTitle")}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  When there is only <strong className="text-white">1 disk</strong>, no other disks obstruct it. It can immediately be moved directly from Source to Target without needing any intermediate auxiliary buffer.
+                  {t("baseCaseDesc")}
                 </p>
                 <div className="rounded-lg bg-black/40 p-3 font-mono text-xs text-slate-300 border border-white/[0.06]">
                   <span className="text-copper-400">if</span> (n === 1) &#123;<br />
@@ -81,20 +83,20 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
               <div className="instrument-panel p-5 space-y-3">
                 <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-copper-400" />
-                  Recursive Case (n &gt; 1)
+                  {t("recursiveCaseTitle")}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  To move <strong className="text-white">N disks</strong> from Source to Target according to the rules, the problem decomposes into 3 sequential sub-problems:
+                  {t("recursiveCaseDesc")}
                 </p>
                 <ol className="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-300 pl-1">
                   <li>
-                    <strong className="text-slate-100">Step 1:</strong> Recursively move top <code className="font-mono text-xs text-copper-300">N - 1</code> disks from <strong>Source</strong> to <strong>Auxiliary</strong> (using Target as buffer).
+                    <span className="text-slate-200">{t("step1Divide")}</span>
                   </li>
                   <li>
-                    <strong className="text-slate-100">Step 2:</strong> Move largest disk <code className="font-mono text-xs text-copper-300">N</code> directly from <strong>Source</strong> to <strong>Target</strong>.
+                    <span className="text-slate-200">{t("step2Base")}</span>
                   </li>
                   <li>
-                    <strong className="text-slate-100">Step 3:</strong> Recursively move <code className="font-mono text-xs text-copper-300">N - 1</code> disks from <strong>Auxiliary</strong> to <strong>Target</strong> (using Source as buffer).
+                    <span className="text-slate-200">{t("step3Conquer")}</span>
                   </li>
                 </ol>
                 <div className="rounded-lg bg-black/40 p-3 font-mono text-xs text-slate-300 border border-white/[0.06] overflow-x-auto">
@@ -110,28 +112,30 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
             <div className="instrument-panel p-5 space-y-3.5">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Cpu className="text-copper-400" size={17} />
-                Stackless Iterative Algorithm (State Machine)
+                {t("iterativeTitle")}
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                For large disk counts, recursive depth risks stack overflow. The iterative approach solves Tower of Hanoi with <strong className="text-signal-green">O(1) auxiliary space</strong> via alternating parity:
+                {t("iterativeDesc")}
               </p>
               <div className="rounded-xl border border-white/[0.08] bg-black/30 p-4 space-y-2.5 text-xs text-slate-300">
-                <div className="font-semibold text-copper-300">Alternating 2-Step Pattern:</div>
+                <div className="font-semibold text-copper-300">{t("iterativePatternTitle")}</div>
                 <ul className="list-disc list-inside space-y-1.5 pl-1">
                   <li>
-                    <strong>Odd Turns (1, 3, 5, ...):</strong> Always cycle <strong className="text-white">Disk 1 (smallest)</strong> to the next rod along its fixed rotational cycle:
+                    <strong>{locale === "vi" ? "Lượt lẻ (1, 3, 5, ...):" : "Odd Turns (1, 3, 5, ...):"}</strong> {t("iterativeOddStep")}
                     <br />
                     <span className="font-mono text-copper-300 pl-4">
-                      {currentDisks % 2 === 0 ? "A → B → C → A (even N)" : "A → C → B → A (odd N)"}
+                      {currentDisks % 2 === 0
+                        ? (locale === "vi" ? "A → B → C → A (N chẵn)" : "A → B → C → A (even N)")
+                        : (locale === "vi" ? "A → C → B → A (N lẻ)" : "A → C → B → A (odd N)")}
                     </span>
                   </li>
                   <li>
-                    <strong>Even Turns (2, 4, 6, ...):</strong> There is always exactly ONE legal move between the two rods that do not contain Disk 1 (place the smaller disk onto the larger disk).
+                    <strong>{locale === "vi" ? "Lượt chẵn (2, 4, 6, ...):" : "Even Turns (2, 4, 6, ...):"}</strong> {t("iterativeEvenStep")}
                   </li>
                 </ul>
               </div>
               <p className="text-xs text-slate-400">
-                Repeating these two deterministic rules yields the exact minimal optimal solution without maintaining any call stack!
+                {t("iterativeConclusion")}
               </p>
             </div>
           )}
@@ -140,19 +144,19 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
             <div className="instrument-panel p-5 space-y-3.5">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 <Sparkles className="text-signal-green" size={17} />
-                Binary Gray Code & Bitwise Counters
+                {t("binaryTitle")}
               </h3>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                The Tower of Hanoi is isomorphic to binary counting and reflected binary Gray codes. Counting from <code className="font-mono text-copper-300">1 to 2ⁿ - 1</code> in binary:
+                {t("binaryDesc")}
               </p>
               <div className="rounded-xl border border-white/[0.08] bg-black/30 p-4 space-y-2 text-xs text-slate-300 font-mono">
-                <div>Step 1 = 001₂ → Trailing zeros = 0 → Move Disk 1</div>
-                <div>Step 2 = 010₂ → Trailing zeros = 1 → Move Disk 2</div>
-                <div>Step 3 = 011₂ → Trailing zeros = 0 → Move Disk 1</div>
-                <div>Step 4 = 100₂ → Trailing zeros = 2 → Move Disk 3</div>
+                <div>Step 1 = 001₂ → Trailing zeros = 0 → {locale === "vi" ? "Chuyển Đĩa 1" : "Move Disk 1"}</div>
+                <div>Step 2 = 010₂ → Trailing zeros = 1 → {locale === "vi" ? "Chuyển Đĩa 2" : "Move Disk 2"}</div>
+                <div>Step 3 = 011₂ → Trailing zeros = 0 → {locale === "vi" ? "Chuyển Đĩa 1" : "Move Disk 1"}</div>
+                <div>Step 4 = 100₂ → Trailing zeros = 2 → {locale === "vi" ? "Chuyển Đĩa 3" : "Move Disk 3"}</div>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                At any step <code className="font-mono text-copper-300">k</code>, the disk to move is determined by the lowest 1-bit index: <code className="font-mono text-signal-green">ctz(k) + 1</code>. This can be computed in <strong className="text-white">O(1)</strong> hardware instructions!
+                {t("binaryExplanation")}
               </p>
             </div>
           )}
@@ -163,16 +167,16 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
           <div className="instrument-panel p-5 space-y-3">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <Calculator className="text-copper-400" size={16} />
-              Mathematical Recurrence
+              {t("mathRecurrenceTitle")}
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Let <code className="font-mono text-copper-300">T(n)</code> be the minimal number of moves required for n disks:
+              {t("mathRecurrenceIntro")}
             </p>
             <div className="rounded-lg bg-black/40 p-3 font-mono text-xs text-center border border-white/[0.06] text-copper-300 space-y-1">
               <div>T(1) = 1</div>
               <div>T(n) = 2 · T(n - 1) + 1</div>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">Unrolling the geometric series:</p>
+            <p className="text-xs text-slate-400 leading-relaxed">{t("mathUnrolling")}</p>
             <div className="text-xs font-mono text-slate-300 pl-2 border-l border-white/[0.1] space-y-0.5">
               <div>T(n) = 2(2T(n-2) + 1) + 1</div>
               <div>T(n) = 2ⁿ⁻¹ + ... + 2¹ + 2⁰</div>
@@ -183,24 +187,24 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
           <div className="instrument-panel p-5 space-y-3">
             <h3 className="text-sm font-semibold text-white flex items-center gap-2">
               <Sparkles className="text-signal-green" size={16} />
-              Complexity Comparison
+              {t("complexityTitle")}
             </h3>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-                <span className="text-slate-400">Time Complexity:</span>
+                <span className="text-slate-400">{t("timeComplexity")}</span>
                 <span className="text-signal-green font-semibold">O(2ⁿ)</span>
               </div>
               <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-                <span className="text-slate-400">Recursive Space:</span>
+                <span className="text-slate-400">{t("recursiveSpace")}</span>
                 <span className="text-copper-300 font-semibold">O(n)</span>
               </div>
               <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-                <span className="text-slate-400">Iterative Space:</span>
+                <span className="text-slate-400">{t("iterativeSpace")}</span>
                 <span className="text-signal-blue font-semibold">O(1)</span>
               </div>
               <div className="flex justify-between pt-0.5">
-                <span className="text-slate-300">N = {currentDisks} disks:</span>
-                <span className="text-white font-bold">{minMoves} moves</span>
+                <span className="text-slate-300">{t("movesForNDisks", { count: currentDisks })}</span>
+                <span className="text-white font-bold">{minMoves} {locale === "vi" ? "bước" : "moves"}</span>
               </div>
             </div>
           </div>
