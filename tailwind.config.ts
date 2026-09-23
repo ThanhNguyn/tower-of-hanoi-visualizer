@@ -44,12 +44,17 @@ export default {
         "success-stamp": {
           "0%": { opacity: "0", transform: "translateY(8px) scale(0.96)" },
           "100%": { opacity: "1", transform: "translateY(0) scale(1)" }
+        },
+        fadeIn: {
+          "0%": { opacity: "0", transform: "translateY(4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" }
         }
       },
       animation: {
         shake: "shake 0.45s ease-in-out",
         "trace-pulse": "trace-pulse 1.8s ease-in-out infinite",
-        "success-stamp": "success-stamp 300ms cubic-bezier(0.16, 1, 0.3, 1) both"
+        "success-stamp": "success-stamp 300ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        fadeIn: "fadeIn 0.25s ease-out both"
       }
     }
   },

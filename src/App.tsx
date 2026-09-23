@@ -8,6 +8,7 @@ import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 import { Header } from "./components/Header";
 import { DiskSelector } from "./components/DiskSelector";
 import { HanoiBoard } from "./components/HanoiBoard";
+import { Hanoi3DCanvas } from "./components/Hanoi3DCanvas";
 import { UnifiedControls } from "./components/UnifiedControls";
 import { StatisticsPanel } from "./components/StatisticsPanel";
 import { CompletionPanel } from "./components/CompletionPanel";
@@ -19,6 +20,7 @@ import { RulesModal } from "./components/RulesModal";
 
 function VisualizerApp() {
   const { t } = useLanguage();
+  const [viewMode, setViewMode] = useState<"3d" | "2d">("3d");
   const [activeSource, setActiveSource] = useState<"manual" | "simulation">("manual");
   const [diskCount, setDiskCount] = useState<number>(4);
   const [isRulesOpen, setIsRulesOpen] = useState(false);
@@ -127,6 +129,8 @@ function VisualizerApp() {
         {/* Header with Brand, Rules, Audio Toggle & Language Switcher */}
         <Header
           isMuted={isMuted}
+          viewMode={viewMode}
+          onToggleViewMode={setViewMode}
           onToggleSound={handleToggleSound}
           onOpenRules={() => setIsRulesOpen(true)}
           onReset={handleReset}
@@ -168,25 +172,42 @@ function VisualizerApp() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Main Tower Area & Unified Controls */}
           <div className="lg:col-span-8 flex flex-col gap-4">
-            <HanoiBoard
-              rods={currentRods}
-              totalDisks={diskCount}
-              selectedRod={activeSource === "manual" ? game.selectedRod : null}
-              shakeRod={activeSource === "manual" ? game.shakeRod : null}
-              hintMove={activeSource === "manual" ? game.hintMove : null}
-              isInteractive={!sim.isPlaying}
-              speed={sim.speed}
-              onSelectRod={(rod) => {
-                if (sim.isPlaying) return;
-                setActiveSource("manual");
-                game.handleSelectRod(rod);
-              }}
-              onDropDisk={(from, to) => {
-                if (sim.isPlaying) return;
-                setActiveSource("manual");
-                game.handleDirectMove(from, to);
-              }}
-            />
+            {viewMode === "3d" ? (
+              <Hanoi3DCanvas
+                rods={currentRods}
+                totalDisks={diskCount}
+                selectedRod={activeSource === "manual" ? game.selectedRod : null}
+                shakeRod={activeSource === "manual" ? game.shakeRod : null}
+                hintMove={activeSource === "manual" ? game.hintMove : null}
+                isInteractive={!sim.isPlaying}
+                speed={sim.speed}
+                onSelectRod={(rod) => {
+                  if (sim.isPlaying) return;
+                  setActiveSource("manual");
+                  game.handleSelectRod(rod);
+                }}
+              />
+            ) : (
+              <HanoiBoard
+                rods={currentRods}
+                totalDisks={diskCount}
+                selectedRod={activeSource === "manual" ? game.selectedRod : null}
+                shakeRod={activeSource === "manual" ? game.shakeRod : null}
+                hintMove={activeSource === "manual" ? game.hintMove : null}
+                isInteractive={!sim.isPlaying}
+                speed={sim.speed}
+                onSelectRod={(rod) => {
+                  if (sim.isPlaying) return;
+                  setActiveSource("manual");
+                  game.handleSelectRod(rod);
+                }}
+                onDropDisk={(from, to) => {
+                  if (sim.isPlaying) return;
+                  setActiveSource("manual");
+                  game.handleDirectMove(from, to);
+                }}
+              />
+            )}
 
             {/* Seamless Unified Control Deck */}
             <UnifiedControls

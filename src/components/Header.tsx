@@ -1,9 +1,12 @@
-import { BookOpen, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, RotateCcw, Volume2, VolumeX, Box, Square } from "lucide-react";
 import { HanoiLogo } from "./HanoiLogo";
 import { useLanguage } from "../i18n/LanguageContext";
+import { sound } from "../utils/audio";
 
 interface HeaderProps {
   isMuted: boolean;
+  viewMode: "3d" | "2d";
+  onToggleViewMode: (mode: "3d" | "2d") => void;
   onToggleSound: () => void;
   onOpenRules: () => void;
   onReset: () => void;
@@ -11,6 +14,8 @@ interface HeaderProps {
 
 export function Header({
   isMuted,
+  viewMode,
+  onToggleViewMode,
   onToggleSound,
   onOpenRules,
   onReset
@@ -18,12 +23,15 @@ export function Header({
   const { locale, setLocale, t } = useLanguage();
 
   return (
-    <header className="mb-4 flex flex-col gap-4 border-b border-white/[0.07] pb-4 sm:flex-row sm:items-center sm:justify-between">
+    <header className="mb-4 flex flex-col gap-4 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3.5">
-        <HanoiLogo className="h-10 w-10 shadow-md shrink-0" size={40} />
+        <HanoiLogo className="h-11 w-11 shadow-lg shrink-0" size={44} />
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-            {t("appTitle")}
+          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl flex items-center gap-2">
+            <span>{t("appTitle")}</span>
+            <span className="rounded-full bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-300">
+              v2.0 3D Tactile
+            </span>
           </h1>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
             {t("appSubtitle")}
@@ -32,18 +40,62 @@ export function Header({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
+        {/* Dual-View Mode Switcher: 3D Studio vs 2D Classic */}
+        <div
+          className="flex items-center rounded-xl border border-white/[0.12] bg-[#0c111a] p-1 shadow-md"
+          role="group"
+          aria-label="View Mode Switcher"
+        >
+          <button
+            type="button"
+            onClick={() => {
+              sound.playClick();
+              onToggleViewMode("3d");
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+              viewMode === "3d"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                : "text-slate-400 hover:text-slate-200 border border-transparent"
+            }`}
+            title="Bàn cờ 3D WebGL Siêu thực (Three.js)"
+          >
+            <Box size={14} className={viewMode === "3d" ? "text-amber-400" : "text-slate-500"} />
+            <span>3D Studio</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              sound.playClick();
+              onToggleViewMode("2d");
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+              viewMode === "2d"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                : "text-slate-400 hover:text-slate-200 border border-transparent"
+            }`}
+            title="Bàn cờ 2D Xúc giác Cổ điển (DOM)"
+          >
+            <Square size={14} className={viewMode === "2d" ? "text-amber-400" : "text-slate-500"} />
+            <span>2D Classic</span>
+          </button>
+        </div>
+
         {/* Language Switcher Toggle */}
         <div
-          className="flex items-center rounded-lg border border-white/[0.1] bg-white/[0.04] p-0.5"
+          className="flex items-center rounded-xl border border-white/[0.1] bg-[#0c111a] p-1 shadow-md"
           role="group"
           aria-label={t("language")}
         >
           <button
             type="button"
-            onClick={() => setLocale("vi")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+            onClick={() => {
+              sound.playClick();
+              setLocale("vi");
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               locale === "vi"
-                ? "bg-copper-400/25 text-copper-300 shadow-sm"
+                ? "bg-white/[0.1] text-amber-300 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
             title="Tiếng Việt"
@@ -53,10 +105,13 @@ export function Header({
           </button>
           <button
             type="button"
-            onClick={() => setLocale("en")}
-            className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+            onClick={() => {
+              sound.playClick();
+              setLocale("en");
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               locale === "en"
-                ? "bg-copper-400/25 text-copper-300 shadow-sm"
+                ? "bg-white/[0.1] text-amber-300 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
             title="English"
@@ -68,8 +123,11 @@ export function Header({
 
         {/* Rules & Guide Button */}
         <button
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-200 transition hover:bg-white/[0.08] hover:text-white shrink-0"
-          onClick={onOpenRules}
+          className="inline-flex h-9 items-center gap-2 rounded-xl border border-white/[0.1] bg-[#0c111a] px-3 text-xs font-medium text-slate-200 transition hover:bg-white/[0.08] hover:text-white shrink-0"
+          onClick={() => {
+            sound.playClick();
+            onOpenRules();
+          }}
           type="button"
           title={t("rulesAndGuideTitle")}
         >
@@ -79,7 +137,7 @@ export function Header({
 
         {/* Audio Mute Toggle */}
         <button
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white shrink-0"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.1] bg-[#0c111a] text-slate-300 transition hover:bg-white/[0.08] hover:text-white shrink-0"
           onClick={onToggleSound}
           type="button"
           title={isMuted ? t("soundUnmute") : t("soundMute")}
@@ -90,8 +148,11 @@ export function Header({
 
         {/* Global Reset Button */}
         <button
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] hover:text-white shrink-0"
-          onClick={onReset}
+          className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 text-xs font-semibold text-rose-300 transition hover:bg-rose-500/20 hover:text-rose-200 active:scale-95 shrink-0"
+          onClick={() => {
+            sound.playClick();
+            onReset();
+          }}
           type="button"
           title={t("resetTitle")}
         >
