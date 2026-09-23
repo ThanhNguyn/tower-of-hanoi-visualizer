@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   applyMove,
+  generateBinaryTrace,
   generateExecutionTrace,
   generateInitialRods,
+  generateIterativeTrace,
   getBoardStateAtStep,
   getMinMovesToTarget,
   getNextOptimalMove,
   isPuzzleSolved,
+  solveFromCurrentState,
   solveHanoiBinary,
   solveHanoiIterative,
   solveHanoiRecursive,
@@ -148,6 +151,69 @@ describe("Tower of Hanoi Multi-Algorithm Suite & Game Engine", () => {
     expect(lastStep).toBeDefined();
     expect(isPuzzleSolved(lastStep.rods, n, "C")).toBe(true);
     expect(lastStep.stack.length).toBe(0);
+  });
+
+  it("solveFromCurrentState continues optimally from an arbitrary manual board state", () => {
+    const n = 4;
+    let rods = generateInitialRods(n);
+
+    // Make 3 arbitrary manual moves
+    // 1. Disk 1: A -> B
+    rods = applyMove(rods, "A", "B");
+    // 2. Disk 2: A -> C
+    rods = applyMove(rods, "A", "C");
+    // 3. Disk 1: B -> C
+    rods = applyMove(rods, "B", "C");
+
+    expect(rods.A).toEqual([4, 3]);
+    expect(rods.B).toEqual([]);
+    expect(rods.C).toEqual([2, 1]);
+
+    // Solve remaining from this state
+    const remaining = solveFromCurrentState(rods, n, "C", 3);
+    expect(remaining.length).toBeGreaterThan(0);
+
+    // Replay remaining moves
+    for (const m of remaining) {
+      const v = validateMove(rods[m.from], rods[m.to]);
+      expect(v.valid).toBe(true);
+      rods = applyMove(rods, m.from, m.to);
+    }
+
+    expect(isPuzzleSolved(rods, n, "C")).toBe(true);
+  });
+
+  it("generateIterativeTrace produces valid State Machine frames for every step", () => {
+    const n = 3;
+    const trace = generateIterativeTrace(n);
+    expect(trace.length).toBe(Math.pow(2, n)); // step 0 to step 7
+
+    for (let i = 1; i < trace.length; i++) {
+      const frame = trace[i].iterativeFrame;
+      expect(frame).toBeDefined();
+      if (i % 2 === 1) {
+        expect(frame!.stepType).toBe("odd");
+        expect(trace[i].move!.disk).toBe(1);
+      } else {
+        expect(frame!.stepType).toBe("even");
+        expect(trace[i].move!.disk).toBeGreaterThan(1);
+      }
+    }
+  });
+
+  it("generateBinaryTrace produces accurate Gray code and least-significant bit tracking", () => {
+    const n = 3;
+    const trace = generateBinaryTrace(n);
+    expect(trace.length).toBe(Math.pow(2, n));
+
+    for (let k = 1; k < trace.length; k++) {
+      const frame = trace[k].binaryFrame;
+      expect(frame).toBeDefined();
+      expect(frame!.stepNumber).toBe(k);
+      const expectedDisk = Math.round(Math.log2(k & -k)) + 1;
+      expect(frame!.disk).toBe(expectedDisk);
+      expect(trace[k].move!.disk).toBe(expectedDisk);
+    }
   });
 });
 

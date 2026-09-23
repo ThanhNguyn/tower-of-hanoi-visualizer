@@ -26,6 +26,26 @@ export interface CallStackFrame {
   stage: "entering" | "left-child" | "moving" | "right-child" | "returning";
 }
 
+export interface IterativeFrame {
+  stepType: "odd" | "even";
+  disk1Rod: Rod;
+  disk1NextRod: Rod;
+  disk1Cycle: Rod[];
+  otherRods: [Rod, Rod];
+  forcedMove: { from: Rod; to: Rod; disk: number } | null;
+}
+
+export interface BinaryFrame {
+  stepNumber: number;
+  binaryString: string;
+  trailingZeros: number;
+  activeBitIndex: number;
+  disk: number;
+  grayCode: string;
+  prevGrayCode: string;
+  flippedBitIndex: number;
+}
+
 export interface ExecutionStep {
   step: number;
   move: HanoiMove | null;
@@ -33,6 +53,8 @@ export interface ExecutionStep {
   rods: HanoiRods;
   activeCallId: string | null;
   explanation: string;
+  iterativeFrame?: IterativeFrame;
+  binaryFrame?: BinaryFrame;
 }
 
 export interface TreeNode {
@@ -45,3 +67,4 @@ export interface TreeNode {
   moveNumber?: number;
   children: TreeNode[];
 }
+

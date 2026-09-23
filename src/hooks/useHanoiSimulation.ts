@@ -1,6 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { generateExecutionTrace, solveHanoi } from "../algorithms/hanoi";
-import type { AlgorithmType, CallStackFrame, ExecutionStep, HanoiMove, HanoiRods } from "../types/hanoi";
+import {
+  generateContinuationTrace,
+  generateTrace,
+  solveFromCurrentState,
+  solveHanoi
+} from "../algorithms/hanoi";
+import type {
+  AlgorithmType,
+  BinaryFrame,
+  CallStackFrame,
+  ExecutionStep,
+  HanoiMove,
+  HanoiRods,
+  IterativeFrame
+} from "../types/hanoi";
 import { sound } from "../utils/audio";
 
 interface UseHanoiSimulationReturn {
@@ -13,6 +26,8 @@ interface UseHanoiSimulationReturn {
   activeMove: HanoiMove | null;
   activeStack: CallStackFrame[];
   activeCallId: string | null;
+  iterativeFrame?: IterativeFrame;
+  binaryFrame?: BinaryFrame;
   stepExplanation: string;
   allMoves: HanoiMove[];
   traceSteps: ExecutionStep[];
@@ -26,6 +41,12 @@ interface UseHanoiSimulationReturn {
   goToStep: (step: number) => void;
   resetSimulation: () => void;
   setSpeed: (speed: number) => void;
+  startContinuation: (
+    currentRods: HanoiRods,
+    existingMoves: HanoiMove[],
+    totalDisks: number,
+    algo: AlgorithmType
+  ) => void;
 }
 
 export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn {
@@ -34,22 +55,33 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
 
-  const allMoves = useMemo(() => solveHanoi(diskCount, algorithm), [diskCount, algorithm]);
-  const traceSteps = useMemo(() => generateExecutionTrace(diskCount), [diskCount]);
+  // Continuation states (when auto-solving from an arbitrary mid-puzzle configuration)
+  const [continuationMoves, setContinuationMoves] = useState<HanoiMove[] | null>(null);
+  const [continuationTraces, setContinuationTraces] = useState<ExecutionStep[] | null>(null);
+
+  const canonicalMoves = useMemo(() => solveHanoi(diskCount, algorithm), [diskCount, algorithm]);
+  const canonicalTraceSteps = useMemo(() => generateTrace(diskCount, algorithm), [diskCount, algorithm]);
+
+  const allMoves = continuationMoves ?? canonicalMoves;
+  const traceSteps = continuationTraces ?? canonicalTraceSteps;
   const totalSteps = allMoves.length;
 
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;
 
-  // Reset when disk count or algorithm changes
+  // Reset when disk count changes
   useEffect(() => {
     setIsPlaying(false);
     setCurrentStep(0);
-  }, [diskCount, algorithm]);
+    setContinuationMoves(null);
+    setContinuationTraces(null);
+  }, [diskCount]);
 
   const setAlgorithm = useCallback((algo: AlgorithmType) => {
     setIsPlaying(false);
     setCurrentStep(0);
+    setContinuationMoves(null);
+    setContinuationTraces(null);
     setAlgorithmState(algo);
   }, []);
 
@@ -101,6 +133,8 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
   const resetSimulation = useCallback(() => {
     setIsPlaying(false);
     setCurrentStep(0);
+    setContinuationMoves(null);
+    setContinuationTraces(null);
     sound.playPickup();
   }, []);
 
@@ -113,7 +147,42 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
     }
   }, [currentStep, totalSteps]);
 
-  // Autoplay loop using setTimeout for smooth cadence
+  /**
+   * Starts or resumes solving from the current arbitrary board state.
+   * Keeps existingMoves in the move ledger and appends optimal continuation moves.
+   */
+  const startContinuation = useCallback(
+    (
+      currentRods: HanoiRods,
+      existingMoves: HanoiMove[],
+      totalDisks: number,
+      algo: AlgorithmType
+    ) => {
+      const remainingMoves = solveFromCurrentState(
+        currentRods,
+        totalDisks,
+        "C",
+        existingMoves.length
+      );
+
+      const combinedMoves = [...existingMoves, ...remainingMoves];
+      const continuationSteps = generateContinuationTrace(
+        currentRods,
+        totalDisks,
+        remainingMoves,
+        existingMoves.length,
+        algo
+      );
+
+      setContinuationMoves(combinedMoves);
+      setContinuationTraces(continuationSteps);
+      setCurrentStep(existingMoves.length);
+      setIsPlaying(true);
+    },
+    []
+  );
+
+  // Autoplay loop using setTimeout for cadence, with 8x high speed support
   useEffect(() => {
     if (!isPlaying) return;
 
@@ -122,13 +191,13 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
       return;
     }
 
-    // Dynamic interval based on speed: base 700ms
-    const intervalMs = Math.max(120, Math.round(700 / speed));
+    // Dynamic interval based on speed: base 700ms down to 60ms at 8x
+    const intervalMs = Math.max(60, Math.round(700 / speed));
 
     const timerId = setTimeout(() => {
       setCurrentStep((prev) => {
         const next = prev + 1;
-        sound.playDrop(1 + (next / totalSteps) * 0.4);
+        sound.playDrop(1 + (next / Math.max(1, totalSteps)) * 0.4);
         if (next >= totalSteps) {
           setIsPlaying(false);
           sound.playVictory();
@@ -140,9 +209,17 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
     return () => clearTimeout(timerId);
   }, [isPlaying, currentStep, totalSteps, speed]);
 
-  const activeStepData = traceSteps[currentStep] ?? traceSteps[0];
+  // Find step data in traces: if in continuation, offset step relative to continuation start
+  const activeStepData = useMemo(() => {
+    if (!continuationTraces) {
+      return traceSteps[currentStep] ?? traceSteps[0];
+    }
+    const matched = continuationTraces.find((s) => s.step === currentStep);
+    return matched ?? continuationTraces[continuationTraces.length - 1] ?? traceSteps[0];
+  }, [continuationTraces, traceSteps, currentStep]);
+
   const activeMove = allMoves[currentStep - 1] ?? null;
-  const isSolved = currentStep === totalSteps;
+  const isSolved = currentStep === totalSteps && totalSteps > 0;
 
   return {
     algorithm,
@@ -154,6 +231,8 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
     activeMove,
     activeStack: activeStepData.stack,
     activeCallId: activeStepData.activeCallId,
+    iterativeFrame: activeStepData.iterativeFrame,
+    binaryFrame: activeStepData.binaryFrame,
     stepExplanation: activeMove ? activeMove.explanation : activeStepData.explanation,
     allMoves,
     traceSteps,
@@ -166,6 +245,7 @@ export function useHanoiSimulation(diskCount: number): UseHanoiSimulationReturn 
     goToLast,
     goToStep,
     resetSimulation,
-    setSpeed
+    setSpeed,
+    startContinuation
   };
 }

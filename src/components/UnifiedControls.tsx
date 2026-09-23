@@ -39,7 +39,7 @@ interface UnifiedControlsProps {
   onSpeedChange: (speed: number) => void;
 }
 
-const SPEED_OPTIONS = [0.5, 1, 2, 4];
+const SPEED_OPTIONS = [0.5, 1, 2, 4, 8];
 
 export function UnifiedControls({
   selectedRod,
@@ -84,7 +84,7 @@ export function UnifiedControls({
         <div className="lg:col-span-5 flex flex-wrap items-center gap-2">
           {/* Hint Key */}
           <button
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-400/40 bg-gradient-to-b from-amber-500/20 to-amber-500/5 px-3.5 text-xs font-bold text-amber-300 shadow-md transition-all hover:brightness-125 hover:border-amber-400 active:translate-y-[2px] active:shadow-inner disabled:opacity-30 disabled:pointer-events-none"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-400/40 bg-gradient-to-b from-cyan-500/20 to-cyan-500/5 px-3.5 text-xs font-bold text-cyan-300 shadow-md transition-all hover:brightness-125 hover:border-cyan-400 active:translate-y-[2px] active:shadow-inner disabled:opacity-30 disabled:pointer-events-none"
             onClick={() => {
               sound.playClick();
               onHint();
@@ -93,7 +93,7 @@ export function UnifiedControls({
             type="button"
             title={t("hintTitle")}
           >
-            <Lightbulb size={15} className="text-amber-400 animate-pulse" />
+            <Lightbulb size={15} className="text-cyan-400 animate-pulse" />
             <span>{t("hint")}</span>
           </button>
 
@@ -164,7 +164,7 @@ export function UnifiedControls({
             aria-label={isPlaying ? t("pauseTitle") : t("autoSolveTitle")}
             className={`inline-flex h-10 items-center gap-2.5 rounded-xl px-5 text-xs font-black uppercase tracking-wider transition-all shadow-xl active:translate-y-[2px] active:shadow-inner whitespace-nowrap shrink-0 ${
               isPlaying
-                ? "border border-amber-400 bg-gradient-to-b from-amber-400 to-amber-600 text-slate-950 shadow-amber-500/25 animate-pulse"
+                ? "border border-cyan-400 bg-gradient-to-b from-cyan-400 to-cyan-600 text-slate-950 shadow-cyan-500/25 animate-pulse"
                 : "border border-emerald-400 bg-gradient-to-b from-emerald-400 to-emerald-600 text-slate-950 shadow-emerald-500/25 hover:brightness-110"
             }`}
             onClick={() => {
@@ -215,7 +215,7 @@ export function UnifiedControls({
         {/* Algorithm Segment Selector */}
         <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.1] bg-[#090d14] p-1 shadow-inner">
           <div className="flex items-center gap-1.5 px-2 text-slate-400 font-mono text-[11px]">
-            <Cpu size={14} className="text-amber-400" />
+            <Cpu size={14} className="text-cyan-400" />
             <span className="hidden sm:inline">{t("algorithmLabel")}</span>
           </div>
           {algorithmsList.map((algo) => (
@@ -229,13 +229,13 @@ export function UnifiedControls({
               title={algo.desc}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 algorithm === algo.id
-                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                  ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
                   : "text-slate-400 hover:text-slate-200 border border-transparent"
               }`}
             >
               <span
                 className={`h-1.5 w-1.5 rounded-full ${
-                  algorithm === algo.id ? "bg-amber-400 animate-ping" : "bg-slate-600"
+                  algorithm === algo.id ? "bg-cyan-400 animate-ping" : "bg-slate-600"
                 }`}
               />
               <span>{algo.label}</span>

@@ -581,7 +581,7 @@ export function Hanoi3DCanvas({
           onClick={() => handleSetPreset("isometric")}
           className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition ${
             cameraPreset === "isometric"
-              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+              ? "bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
           title={t("cameraIsometricTitle")}
@@ -595,7 +595,7 @@ export function Hanoi3DCanvas({
           onClick={() => handleSetPreset("front")}
           className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition ${
             cameraPreset === "front"
-              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+              ? "bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
           title={t("cameraFrontTitle")}
@@ -609,7 +609,7 @@ export function Hanoi3DCanvas({
           onClick={() => handleSetPreset("top")}
           className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition ${
             cameraPreset === "top"
-              ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+              ? "bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
           title={t("cameraTopTitle")}

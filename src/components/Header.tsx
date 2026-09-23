@@ -27,11 +27,8 @@ export function Header({
       <div className="flex items-center gap-3.5">
         <HanoiLogo className="h-11 w-11 shadow-lg shrink-0" size={44} />
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl flex items-center gap-2">
-            <span>{t("appTitle")}</span>
-            <span className="rounded-full bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-300">
-              {t("badgeVersion")}
-            </span>
+          <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            {t("appTitle")}
           </h1>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
             {t("appSubtitle")}
@@ -54,12 +51,12 @@ export function Header({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               viewMode === "3d"
-                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200 border border-transparent"
             }`}
             title={t("viewMode3DTitle")}
           >
-            <Box size={14} className={viewMode === "3d" ? "text-amber-400" : "text-slate-500"} />
+            <Box size={14} className={viewMode === "3d" ? "text-cyan-400" : "text-slate-500"} />
             <span>{t("viewMode3DLabel")}</span>
           </button>
 
@@ -71,12 +68,12 @@ export function Header({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               viewMode === "2d"
-                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200 border border-transparent"
             }`}
             title={t("viewMode2DTitle")}
           >
-            <Square size={14} className={viewMode === "2d" ? "text-amber-400" : "text-slate-500"} />
+            <Square size={14} className={viewMode === "2d" ? "text-cyan-400" : "text-slate-500"} />
             <span>{t("viewMode2DLabel")}</span>
           </button>
         </div>
@@ -95,7 +92,7 @@ export function Header({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               locale === "vi"
-                ? "bg-white/[0.1] text-amber-300 shadow-sm"
+                ? "bg-white/[0.1] text-cyan-300 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
             title="Tiếng Việt"
@@ -111,7 +108,7 @@ export function Header({
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
               locale === "en"
-                ? "bg-white/[0.1] text-amber-300 shadow-sm"
+                ? "bg-white/[0.1] text-cyan-300 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
             }`}
             title="English"
@@ -131,7 +128,7 @@ export function Header({
           type="button"
           title={t("rulesAndGuideTitle")}
         >
-          <BookOpen size={15} className="text-amber-400/90" />
+          <BookOpen size={15} className="text-cyan-400/90" />
           <span>{t("rulesAndGuide")}</span>
         </button>
 

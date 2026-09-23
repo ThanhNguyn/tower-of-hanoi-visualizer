@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useHanoiGame } from "./hooks/useHanoiGame";
 import { useHanoiSimulation } from "./hooks/useHanoiSimulation";
 import { getMinMovesToTarget } from "./algorithms/hanoi";
+import type { Rod } from "./types/hanoi";
 import { sound } from "./utils/audio";
 import { LanguageProvider, useLanguage } from "./i18n/LanguageContext";
 
@@ -62,6 +63,54 @@ function VisualizerApp() {
     setIsMuted(muted);
   }, []);
 
+  const handleTogglePlay = useCallback(() => {
+    if (isSolved) {
+      handleReset();
+      return;
+    }
+
+    // If starting from manual mode or with manual moves made
+    if (activeSource === "manual" || (game.moveCount > 0 && !sim.isPlaying && sim.currentStep === 0)) {
+      sim.startContinuation(game.rods, game.moveHistory, diskCount, sim.algorithm);
+      setActiveSource("simulation");
+      return;
+    }
+
+    // If board differs from simulation step
+    if (!sim.isPlaying && game.moveCount !== sim.currentStep && game.moveCount > 0) {
+      sim.startContinuation(game.rods, game.moveHistory, diskCount, sim.algorithm);
+      setActiveSource("simulation");
+      return;
+    }
+
+    setActiveSource("simulation");
+    sim.togglePlay();
+  }, [isSolved, handleReset, activeSource, game, sim, diskCount]);
+
+  const handleBoardSelectRod = useCallback(
+    (rod: Rod) => {
+      if (sim.isPlaying) return;
+      if (activeSource === "simulation") {
+        game.syncState(sim.currentRods, sim.currentStep, sim.allMoves.slice(0, sim.currentStep));
+        setActiveSource("manual");
+      }
+      game.handleSelectRod(rod);
+    },
+    [sim, activeSource, game]
+  );
+
+  const handleBoardDropDisk = useCallback(
+    (from: Rod, to: Rod) => {
+      if (sim.isPlaying) return;
+      if (activeSource === "simulation") {
+        game.syncState(sim.currentRods, sim.currentStep, sim.allMoves.slice(0, sim.currentStep));
+        setActiveSource("manual");
+      }
+      game.handleDirectMove(from, to);
+    },
+    [sim, activeSource, game]
+  );
+
   // Keyboard shortcuts (Space, ArrowLeft, ArrowRight, R, Ctrl+Z)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -72,8 +121,7 @@ function VisualizerApp() {
 
       if (e.code === "Space") {
         e.preventDefault();
-        setActiveSource("simulation");
-        sim.togglePlay();
+        handleTogglePlay();
       } else if (e.code === "ArrowLeft") {
         e.preventDefault();
         setActiveSource("simulation");
@@ -94,7 +142,7 @@ function VisualizerApp() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sim, game, handleReset]);
+  }, [sim, game, handleReset, handleTogglePlay]);
 
   // Compute active step explanation
   const lastManualMove = game.moveHistory[game.moveHistory.length - 1];
@@ -181,11 +229,7 @@ function VisualizerApp() {
                 hintMove={activeSource === "manual" ? game.hintMove : null}
                 isInteractive={!sim.isPlaying}
                 speed={sim.speed}
-                onSelectRod={(rod) => {
-                  if (sim.isPlaying) return;
-                  setActiveSource("manual");
-                  game.handleSelectRod(rod);
-                }}
+                onSelectRod={handleBoardSelectRod}
               />
             ) : (
               <HanoiBoard
@@ -196,16 +240,8 @@ function VisualizerApp() {
                 hintMove={activeSource === "manual" ? game.hintMove : null}
                 isInteractive={!sim.isPlaying}
                 speed={sim.speed}
-                onSelectRod={(rod) => {
-                  if (sim.isPlaying) return;
-                  setActiveSource("manual");
-                  game.handleSelectRod(rod);
-                }}
-                onDropDisk={(from, to) => {
-                  if (sim.isPlaying) return;
-                  setActiveSource("manual");
-                  game.handleDirectMove(from, to);
-                }}
+                onSelectRod={handleBoardSelectRod}
+                onDropDisk={handleBoardDropDisk}
               />
             )}
 
@@ -241,10 +277,7 @@ function VisualizerApp() {
                 setActiveSource("simulation");
                 sim.goToPrevious();
               }}
-              onTogglePlay={() => {
-                setActiveSource("simulation");
-                sim.togglePlay();
-              }}
+              onTogglePlay={handleTogglePlay}
               onNext={() => {
                 setActiveSource("simulation");
                 sim.goToNext();
@@ -273,6 +306,10 @@ function VisualizerApp() {
             <CallStack
               stack={activeSource === "simulation" ? sim.activeStack : []}
               maxDepth={diskCount}
+              algorithm={sim.algorithm}
+              iterativeFrame={sim.iterativeFrame}
+              binaryFrame={sim.binaryFrame}
+              currentStep={currentMove}
             />
           </div>
         </div>
@@ -291,6 +328,9 @@ function VisualizerApp() {
               stepExplanation={stepExplanation}
               currentStep={currentMove}
               totalSteps={sim.totalSteps}
+              algorithm={sim.algorithm}
+              iterativeFrame={sim.iterativeFrame}
+              binaryFrame={sim.binaryFrame}
               onSelectStep={(step) => {
                 setActiveSource("simulation");
                 sim.goToStep(step);

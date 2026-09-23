@@ -25,6 +25,7 @@ interface UseHanoiGameReturn {
   undo: () => void;
   requestHint: () => void;
   resetGame: () => void;
+  syncState: (rods: HanoiRods, count: number, history: HanoiMove[]) => void;
 }
 
 export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
@@ -180,6 +181,19 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     }
   }, [rods, diskCount, t]);
 
+  const syncState = useCallback((newRods: HanoiRods, count: number, history: HanoiMove[]) => {
+    setRods({
+      A: [...newRods.A],
+      B: [...newRods.B],
+      C: [...newRods.C]
+    });
+    setMoveCount(count);
+    setMoveHistory([...history]);
+    setSelectedRod(null);
+    setErrorMessage(null);
+    setHintMove(null);
+  }, []);
+
   return {
     rods,
     selectedRod,
@@ -194,6 +208,7 @@ export function useHanoiGame(diskCount: number): UseHanoiGameReturn {
     handleDirectMove,
     undo,
     requestHint,
-    resetGame
+    resetGame,
+    syncState
   };
 }

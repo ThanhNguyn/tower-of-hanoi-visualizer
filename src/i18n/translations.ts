@@ -216,6 +216,45 @@ export interface TranslationDictionary {
   legendP2: string;
   legendTotalMoves: string;
   legendTimeRequired: string;
+
+  // Iterative Parity Visualizer
+  iterativeStateMachineTitle: string;
+  iterativePrincipleSubtitle: string;
+  iterativePhaseOdd: string;
+  iterativePhaseEven: string;
+  hasDisk1: string;
+  destinationPeg: string;
+  sourcePeg: string;
+  oddStepRuleTitle: string;
+  evenStepRuleTitle: string;
+  oddStepRuleDesc: string;
+  evenStepRuleDesc: string;
+  pegLabel: string;
+  smallestDiskOnly: string;
+  onlyLegalChoice: string;
+  stateMachineInspectorTitle: string;
+  disk1Position: string;
+  disk1NextPeg: string;
+  cycleOrder: string;
+  stateMachineOddHelp: string;
+  stateMachineEvenHelp: string;
+  iterativeInspectorFooter: string;
+
+  // Binary Parity Visualizer
+  binaryRegisterTitle: string;
+  binaryGrayCodeSubtitle: string;
+  binaryStepCounter: string;
+  binaryRegisterLabel: string;
+  grayCodeLabel: string;
+  diskToMoveLabel: string;
+  flippedBadge: string;
+  bitwiseMechanismTitle: string;
+  stepNumber: string;
+  binaryProofExplanation: string;
+  bitwiseInspectorTitle: string;
+  movingDisk: string;
+  binaryInspectorHelp: string;
+  binaryInspectorFooter: string;
 }
 
 export const translations: Record<Locale, TranslationDictionary> = {
@@ -434,7 +473,46 @@ export const translations: Record<Locale, TranslationDictionary> = {
     legendP1: "Theo truyền thuyết cổ xưa tại ngôi đền Kashi Vishwanath (Varanasi), các nhà sư Bà La Môn được thần Brahma trao cho 64 chiếc đĩa bằng vàng ròng để chuyển qua lại giữa 3 cây kim bằng kim cương tuân thủ nghiêm ngặt các quy tắc trên.",
     legendP2: "Lời sấm truyền rằng khi chiếc đĩa vàng thứ 64 cuối cùng được đặt chuẩn xác sang cây kim đích, ngôi đền sẽ sụp đổ thành cát bụi và vũ trụ sẽ đi đến hồi kết thúc.",
     legendTotalMoves: "Tổng số bước đi = 2⁶⁴ - 1 = 18.446.744.073.709.551.615 bước.",
-    legendTimeRequired: "Nếu mỗi giây di chuyển được 1 đĩa không ngừng nghỉ, cần khoảng 584,9 tỷ năm để hoàn thành (gấp 42 lần tuổi thọ hiện tại của vũ trụ)!"
+    legendTimeRequired: "Nếu mỗi giây di chuyển được 1 đĩa không ngừng nghỉ, cần khoảng 584,9 tỷ năm để hoàn thành (gấp 42 lần tuổi thọ hiện tại của vũ trụ)!",
+
+    // Iterative Parity Visualizer
+    iterativeStateMachineTitle: "Máy trạng thái Thuật toán Lặp",
+    iterativePrincipleSubtitle: "Quy luật luân phiên: Bước lẻ xoay Đĩa 1 · Bước chẵn đi nước duy nhất",
+    iterativePhaseOdd: "Bước Lẻ: Đĩa 1",
+    iterativePhaseEven: "Bước Chẵn: Cọc còn lại",
+    hasDisk1: "Đang giữ Đĩa 1",
+    destinationPeg: "Cọc đích đến",
+    sourcePeg: "Cọc xuất phát",
+    oddStepRuleTitle: "Quy tắc Bước Lẻ (Luân phiên)",
+    evenStepRuleTitle: "Quy tắc Bước Chẵn (Bắt buộc)",
+    oddStepRuleDesc: "Luôn luôn di chuyển Đĩa 1 (đĩa nhỏ nhất) sang cọc tiếp theo theo chiều chu kỳ tuần hoàn cố định.",
+    evenStepRuleDesc: "Xét 2 cọc KHÔNG chứa Đĩa 1: Luôn tồn tại duy nhất một nước đi hợp lệ (chuyển đĩa nhỏ hơn lên đĩa lớn hơn hoặc vào cọc trống).",
+    pegLabel: "Cọc {peg}",
+    smallestDiskOnly: "Chỉ Đĩa 1",
+    onlyLegalChoice: "Nước hợp lệ duy nhất",
+    stateMachineInspectorTitle: "Thanh tra Máy trạng thái Lặp",
+    disk1Position: "Vị trí Đĩa 1",
+    disk1NextPeg: "Đích chu kỳ tiếp theo",
+    cycleOrder: "Trình tự chu kỳ",
+    stateMachineOddHelp: "Đang ở nhịp lẻ: Hệ thống buộc phải đưa Đĩa 1 sang cọc kế tiếp theo chu kỳ đã định trước bởi tính chẵn lẻ của N.",
+    stateMachineEvenHelp: "Đang ở nhịp chẵn: Bỏ qua cọc chứa Đĩa 1. Giữa hai cọc còn lại chỉ có đúng 1 nước đi tuân thủ luật tháp.",
+    iterativeInspectorFooter: "Thuật toán lặp chứng minh không cần đệ quy ngăn xếp vẫn giải tối ưu O(2ⁿ - 1) với O(1) bộ nhớ phụ.",
+
+    // Binary Parity Visualizer
+    binaryRegisterTitle: "Thanh ghi Nhị phân & Mã Gray",
+    binaryGrayCodeSubtitle: "Biểu diễn trạng thái bitwise và chuyển dịch mã Gray G(k) = k ⊕ (k ≫ 1)",
+    binaryStepCounter: "Bước {step}",
+    binaryRegisterLabel: "Thanh ghi Nhị phân",
+    grayCodeLabel: "Mã Gray",
+    diskToMoveLabel: "Chuyển Đĩa {disk}",
+    flippedBadge: "Đảo bit",
+    bitwiseMechanismTitle: "Cơ chế Toán học Bitwise",
+    stepNumber: "Chỉ số bước",
+    binaryProofExplanation: "Tại bước k, vị trí bit 1 thấp nhất (ctz + 1) chỉ ra chính xác đĩa cần chuyển. Mỗi bước chỉ đảo đúng 1 bit trong mã Gray!",
+    bitwiseInspectorTitle: "Thanh tra Thanh ghi Bitwise",
+    movingDisk: "Đĩa đang chuyển",
+    binaryInspectorHelp: "Bit 1 thấp nhất xác định đĩa. Mã Gray thể hiện mỗi bước tương ứng với một cạnh trên tam giác fractal Sierpiński.",
+    binaryInspectorFooter: "Mỗi bước đi của Tháp Hà Nội tương ứng chính xác với bước chuyển mã Gray n-bit và đồ thị Sierpiński."
   },
   en: {
     // Brand & Header
@@ -651,6 +729,45 @@ export const translations: Record<Locale, TranslationDictionary> = {
     legendP1: "According to ancient legend, in a temple at Kashi Vishwanath (Varanasi), Hindu priests were assigned by Brahma to transfer 64 sacred golden disks across three diamond needles according to the immutable rules.",
     legendP2: "Prophecy holds that when the 64th golden disk is placed on the destination needle, the temple will crumble into dust and the universe will reach its end.",
     legendTotalMoves: "Total moves = 2⁶⁴ - 1 = 18,446,744,073,709,551,615 steps.",
-    legendTimeRequired: "At 1 move per second nonstop, completing it requires approximately 584.9 billion years (42× the age of our universe)!"
+    legendTimeRequired: "At 1 move per second nonstop, completing it requires approximately 584.9 billion years (42× the age of our universe)!",
+
+    // Iterative Parity Visualizer
+    iterativeStateMachineTitle: "Iterative State Machine",
+    iterativePrincipleSubtitle: "Alternating rule: Odd tick cycles Disk 1 · Even tick forced single move",
+    iterativePhaseOdd: "Odd Phase: Disk 1",
+    iterativePhaseEven: "Even Phase: Other Pegs",
+    hasDisk1: "Holds Disk 1",
+    destinationPeg: "Destination Peg",
+    sourcePeg: "Source Peg",
+    oddStepRuleTitle: "Odd Step Rule (Alternating)",
+    evenStepRuleTitle: "Even Step Rule (Forced)",
+    oddStepRuleDesc: "Always advance Disk 1 (the smallest disk) to the next peg along its fixed cyclic direction.",
+    evenStepRuleDesc: "Examine the 2 pegs that do NOT hold Disk 1: exactly ONE legal move is mathematically possible between them.",
+    pegLabel: "Peg {peg}",
+    smallestDiskOnly: "Disk 1 Only",
+    onlyLegalChoice: "Only legal move",
+    stateMachineInspectorTitle: "Iterative State Inspector",
+    disk1Position: "Disk 1 Peg",
+    disk1NextPeg: "Next Cycle Peg",
+    cycleOrder: "Cycle Order",
+    stateMachineOddHelp: "Odd tick active: System is obligated to advance the smallest Disk 1 to the next cyclic peg dictated by N's parity.",
+    stateMachineEvenHelp: "Even tick active: Disregard the peg with Disk 1. Between the other two pegs, only one direction satisfies the rules.",
+    iterativeInspectorFooter: "The iterative solution requires zero recursive call stack, operating in O(2ⁿ - 1) moves with O(1) auxiliary space.",
+
+    // Binary Parity Visualizer
+    binaryRegisterTitle: "Binary & Gray Code Register",
+    binaryGrayCodeSubtitle: "Bitwise state tracking and Gray Code transition G(k) = k ⊕ (k ≫ 1)",
+    binaryStepCounter: "Step {step}",
+    binaryRegisterLabel: "Binary Register",
+    grayCodeLabel: "Gray Code",
+    diskToMoveLabel: "Move Disk {disk}",
+    flippedBadge: "Flipped",
+    bitwiseMechanismTitle: "Bitwise Mathematical Mechanics",
+    stepNumber: "Step Counter",
+    binaryProofExplanation: "At step k, the position of the least significant 1-bit (ctz + 1) dictates the disk to move. Exactly one bit flips in Gray code every move!",
+    bitwiseInspectorTitle: "Bitwise Register Inspector",
+    movingDisk: "Moving Disk",
+    binaryInspectorHelp: "Lowest 1-bit determines the moving disk. Gray codes map directly to traversing the Sierpiński fractal triangle.",
+    binaryInspectorFooter: "Every state transition in Tower of Hanoi is isomorphic to an n-bit Gray code sequence and the Sierpiński graph."
   }
 };

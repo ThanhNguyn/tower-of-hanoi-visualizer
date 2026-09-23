@@ -1,7 +1,9 @@
 import { GitFork } from "lucide-react";
-import type { CallStackFrame, HanoiMove } from "../types/hanoi";
+import type { AlgorithmType, BinaryFrame, CallStackFrame, HanoiMove, IterativeFrame } from "../types/hanoi";
 import { useLanguage } from "../i18n/LanguageContext";
 import { RecursiveBinaryTree } from "./RecursiveBinaryTree";
+import { IterativeCycleVisualizer } from "./IterativeCycleVisualizer";
+import { BinaryGrayCodeVisualizer } from "./BinaryGrayCodeVisualizer";
 
 interface RecursiveVisualizerProps {
   diskCount: number;
@@ -10,6 +12,9 @@ interface RecursiveVisualizerProps {
   stepExplanation: string;
   currentStep?: number;
   totalSteps?: number;
+  algorithm?: AlgorithmType;
+  iterativeFrame?: IterativeFrame;
+  binaryFrame?: BinaryFrame;
   onSelectStep?: (step: number) => void;
 }
 
@@ -20,9 +25,40 @@ export function RecursiveVisualizer({
   stepExplanation,
   currentStep = 0,
   totalSteps = 0,
+  algorithm = "recursive",
+  iterativeFrame,
+  binaryFrame,
   onSelectStep
 }: RecursiveVisualizerProps) {
   const { t } = useLanguage();
+
+  if (algorithm === "iterative") {
+    return (
+      <IterativeCycleVisualizer
+        diskCount={diskCount}
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        iterativeFrame={iterativeFrame}
+        stepExplanation={stepExplanation}
+        onSelectStep={onSelectStep}
+      />
+    );
+  }
+
+  if (algorithm === "binary") {
+    return (
+      <BinaryGrayCodeVisualizer
+        diskCount={diskCount}
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        binaryFrame={binaryFrame}
+        stepExplanation={stepExplanation}
+        onSelectStep={onSelectStep}
+      />
+    );
+  }
+
+  // Recursive Algorithm: Execution Frame + Binary Recursion Tree
   const currentTopFrame = activeStack.length > 0 ? activeStack[activeStack.length - 1] : null;
 
   return (
@@ -31,7 +67,7 @@ export function RecursiveVisualizer({
       <div className="rounded-2xl border border-white/[0.08] bg-[#0d1017] p-4 shadow-xl">
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-3">
           <div className="flex items-center gap-2">
-            <GitFork className="text-amber-400" size={16} />
+            <GitFork className="text-cyan-400" size={16} />
             <h2 className="text-sm font-semibold text-slate-100">{t("traceTreeTitle")}</h2>
           </div>
           <span className="font-mono text-xs text-slate-400">
@@ -45,7 +81,7 @@ export function RecursiveVisualizer({
               {t("currentExecutionFrame")}
             </span>
             {currentTopFrame ? (
-              <span className="text-amber-300 font-semibold">
+              <span className="text-cyan-300 font-semibold">
                 {t("depthLabel", { depth: currentTopFrame.depth })}
               </span>
             ) : (
@@ -55,7 +91,7 @@ export function RecursiveVisualizer({
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {currentTopFrame ? (
-              <code className="rounded bg-amber-400/15 px-2.5 py-1 text-xs font-mono font-semibold text-amber-300 border border-amber-400/30">
+              <code className="rounded bg-cyan-400/15 px-2.5 py-1 text-xs font-mono font-semibold text-cyan-300 border border-cyan-400/30">
                 hanoi({currentTopFrame.n}, {currentTopFrame.source}, {currentTopFrame.auxiliary}, {currentTopFrame.target})
               </code>
             ) : (

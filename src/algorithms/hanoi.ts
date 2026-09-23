@@ -416,6 +416,374 @@ export function generateExecutionTrace(n: number, target: Rod = "C"): ExecutionS
 }
 
 /**
+ * Generates full execution steps for the Iterative algorithm with State Machine frames.
+ */
+export function generateIterativeTrace(n: number, target: Rod = "C"): ExecutionStep[] {
+  const steps: ExecutionStep[] = [];
+  const totalMoves = Math.pow(2, n) - 1;
+  let currentRods = generateInitialRods(n);
+  const aux: Rod = (RODS.find((r) => r !== "A" && r !== target) ?? "B") as Rod;
+  const disk1Cycle: Rod[] = n % 2 === 0 ? ["A", aux, target] : ["A", target, aux];
+
+  function getDisk1Next(current: Rod): Rod {
+    const idx = disk1Cycle.indexOf(current);
+    return disk1Cycle[(idx + 1) % 3];
+  }
+
+  function getTop(r: Rod): number | undefined {
+    return currentRods[r].length > 0 ? currentRods[r][currentRods[r].length - 1] : undefined;
+  }
+
+  let disk1Rod: Rod = "A";
+
+  steps.push({
+    step: 0,
+    move: null,
+    stack: [],
+    rods: cloneRods(currentRods),
+    activeCallId: null,
+    explanation: `Initial state: ${n} disks on Rod A. Iterative cycle direction: ${disk1Cycle.join(" → ")} → ${disk1Cycle[0]}.`,
+    iterativeFrame: {
+      stepType: "odd",
+      disk1Rod: "A",
+      disk1NextRod: getDisk1Next("A"),
+      disk1Cycle,
+      otherRods: [aux, target],
+      forcedMove: null
+    }
+  });
+
+  for (let step = 1; step <= totalMoves; step++) {
+    if (step % 2 === 1) {
+      const from = disk1Rod;
+      const to = getDisk1Next(disk1Rod);
+      currentRods = applyMove(currentRods, from, to);
+      const otherRods = RODS.filter((r) => r !== to) as [Rod, Rod];
+
+      steps.push({
+        step,
+        move: {
+          id: step,
+          disk: 1,
+          from,
+          to,
+          moveIndex: step,
+          explanation: `Step ${step} (Odd): Cycle smallest Disk 1 along ${from} → ${to}.`
+        },
+        stack: [],
+        rods: cloneRods(currentRods),
+        activeCallId: null,
+        explanation: `Odd Step: Smallest Disk 1 moves to next cyclic peg (${from} → ${to}).`,
+        iterativeFrame: {
+          stepType: "odd",
+          disk1Rod: to,
+          disk1NextRod: getDisk1Next(to),
+          disk1Cycle,
+          otherRods,
+          forcedMove: null
+        }
+      });
+      disk1Rod = to;
+    } else {
+      const otherRods = RODS.filter((r) => r !== disk1Rod) as [Rod, Rod];
+      const r1 = otherRods[0];
+      const r2 = otherRods[1];
+      const top1 = getTop(r1);
+      const top2 = getTop(r2);
+
+      let from: Rod;
+      let to: Rod;
+      let movingDisk: number;
+
+      if (top1 === undefined) {
+        from = r2;
+        to = r1;
+        movingDisk = top2!;
+      } else if (top2 === undefined) {
+        from = r1;
+        to = r2;
+        movingDisk = top1;
+      } else if (top1 < top2) {
+        from = r1;
+        to = r2;
+        movingDisk = top1;
+      } else {
+        from = r2;
+        to = r1;
+        movingDisk = top2;
+      }
+
+      currentRods = applyMove(currentRods, from, to);
+
+      steps.push({
+        step,
+        move: {
+          id: step,
+          disk: movingDisk,
+          from,
+          to,
+          moveIndex: step,
+          explanation: `Step ${step} (Even): Only legal move between non-Disk 1 pegs (${from} → ${to}, Disk ${movingDisk}).`
+        },
+        stack: [],
+        rods: cloneRods(currentRods),
+        activeCallId: null,
+        explanation: `Even Step: Strictly one legal move exists between ${r1} and ${r2}. Moving Disk ${movingDisk} from ${from} to ${to}.`,
+        iterativeFrame: {
+          stepType: "even",
+          disk1Rod,
+          disk1NextRod: getDisk1Next(disk1Rod),
+          disk1Cycle,
+          otherRods,
+          forcedMove: { from, to, disk: movingDisk }
+        }
+      });
+    }
+  }
+
+  return steps;
+}
+
+/**
+ * Generates full execution steps for the Binary algorithm with Gray Code register frames.
+ */
+export function generateBinaryTrace(n: number, target: Rod = "C"): ExecutionStep[] {
+  const steps: ExecutionStep[] = [];
+  const totalMoves = Math.pow(2, n) - 1;
+  let currentRods = generateInitialRods(n);
+  const aux: Rod = (RODS.find((r) => r !== "A" && r !== target) ?? "B") as Rod;
+
+  const cycleClockwise: Rod[] = ["A", target, aux];
+  const cycleCounterClockwise: Rod[] = ["A", aux, target];
+
+  function getCycle(d: number): Rod[] {
+    const isOddDisk = d % 2 === 1;
+    const isOddN = n % 2 === 1;
+    if (isOddN) {
+      return isOddDisk ? cycleClockwise : cycleCounterClockwise;
+    } else {
+      return isOddDisk ? cycleCounterClockwise : cycleClockwise;
+    }
+  }
+
+  function getNextRodForDisk(d: number, currentRod: Rod): Rod {
+    const cycle = getCycle(d);
+    const idx = cycle.indexOf(currentRod);
+    return cycle[(idx + 1) % 3];
+  }
+
+  const initialBinary = "0".repeat(n);
+  steps.push({
+    step: 0,
+    move: null,
+    stack: [],
+    rods: cloneRods(currentRods),
+    activeCallId: null,
+    explanation: `Initial state: Binary counter k = 0 (${initialBinary}₂). Gray Code G(0) = ${initialBinary}₂.`,
+    binaryFrame: {
+      stepNumber: 0,
+      binaryString: initialBinary,
+      trailingZeros: 0,
+      activeBitIndex: 0,
+      disk: 1,
+      grayCode: initialBinary,
+      prevGrayCode: initialBinary,
+      flippedBitIndex: -1
+    }
+  });
+
+  for (let k = 1; k <= totalMoves; k++) {
+    const trailingZeros = Math.round(Math.log2(k & -k));
+    const disk = Math.min(n, trailingZeros + 1);
+
+    let fromRod: Rod = "A";
+    for (const r of RODS) {
+      if (currentRods[r].includes(disk)) {
+        fromRod = r;
+        break;
+      }
+    }
+
+    const toRod = getNextRodForDisk(disk, fromRod);
+    currentRods = applyMove(currentRods, fromRod, toRod);
+
+    const binaryString = k.toString(2).padStart(n, "0");
+    const grayCode = (k ^ (k >> 1)).toString(2).padStart(n, "0");
+    const prevGrayCode = ((k - 1) ^ ((k - 1) >> 1)).toString(2).padStart(n, "0");
+
+    steps.push({
+      step: k,
+      move: {
+        id: k,
+        disk,
+        from: fromRod,
+        to: toRod,
+        moveIndex: k,
+        explanation: `Binary Step ${k} (${binaryString}₂): Bit ${trailingZeros} is lowest 1-bit → Move Disk ${disk} (${fromRod} → ${toRod}).`
+      },
+      stack: [],
+      rods: cloneRods(currentRods),
+      activeCallId: null,
+      explanation: `Step ${k} (${binaryString}₂): Trailing zeros = ${trailingZeros} → Move Disk ${disk}. Gray code flip at position ${trailingZeros}.`,
+      binaryFrame: {
+        stepNumber: k,
+        binaryString,
+        trailingZeros,
+        activeBitIndex: trailingZeros,
+        disk,
+        grayCode,
+        prevGrayCode,
+        flippedBitIndex: trailingZeros
+      }
+    });
+  }
+
+  return steps;
+}
+
+/**
+ * Universal dispatcher for simulation traces.
+ */
+export function generateTrace(n: number, algo: AlgorithmType = "recursive", target: Rod = "C"): ExecutionStep[] {
+  if (algo === "iterative") {
+    return generateIterativeTrace(n, target);
+  }
+  if (algo === "binary") {
+    return generateBinaryTrace(n, target);
+  }
+  return generateExecutionTrace(n, target);
+}
+
+/**
+ * Solves the remaining puzzle optimally from ANY current board state.
+ * Uses getNextOptimalMove iteratively to generate the shortest path to goal.
+ */
+export function solveFromCurrentState(
+  currentRods: HanoiRods,
+  totalDisks: number,
+  target: Rod = "C",
+  startingMoveIndex: number = 0
+): HanoiMove[] {
+  const moves: HanoiMove[] = [];
+  let rods = cloneRods(currentRods);
+  let step = startingMoveIndex;
+  const maxIterations = 2048;
+  let iter = 0;
+
+  while (!isPuzzleSolved(rods, totalDisks, target) && iter < maxIterations) {
+    iter++;
+    const next = getNextOptimalMove(rods, totalDisks, target);
+    if (!next) break;
+    step++;
+    moves.push({
+      id: step,
+      disk: next.disk,
+      from: next.from,
+      to: next.to,
+      moveIndex: step,
+      explanation: next.reason
+    });
+    rods = applyMove(rods, next.from, next.to);
+  }
+  return moves;
+}
+
+/**
+ * Generates execution steps for a continuation sequence from an arbitrary board state.
+ */
+export function generateContinuationTrace(
+  initialRods: HanoiRods,
+  totalDisks: number,
+  remainingMoves: HanoiMove[],
+  startingStep: number,
+  algo: AlgorithmType = "recursive"
+): ExecutionStep[] {
+  const steps: ExecutionStep[] = [];
+  let currentRods = cloneRods(initialRods);
+  const aux: Rod = "B";
+
+  // Step 0 of continuation
+  steps.push({
+    step: startingStep,
+    move: null,
+    stack: [
+      {
+        id: `continuation-root-${startingStep}`,
+        n: totalDisks,
+        source: "A",
+        auxiliary: aux,
+        target: "C",
+        depth: 1,
+        stage: "entering"
+      }
+    ],
+    rods: cloneRods(currentRods),
+    activeCallId: `continuation-root-${startingStep}`,
+    explanation: `Continuing ${algo} solve from current board state. ${remainingMoves.length} optimal moves remaining.`
+  });
+
+  const disk1Cycle: Rod[] = totalDisks % 2 === 0 ? ["A", "B", "C"] : ["A", "C", "B"];
+  function getDisk1Next(c: Rod): Rod {
+    const idx = disk1Cycle.indexOf(c);
+    return disk1Cycle[(idx + 1) % 3];
+  }
+
+  for (let i = 0; i < remainingMoves.length; i++) {
+    const move = remainingMoves[i];
+    const stepNum = startingStep + i + 1;
+    currentRods = applyMove(currentRods, move.from, move.to);
+
+    const callFrame: CallStackFrame = {
+      id: `frame-cont-${stepNum}`,
+      n: move.disk,
+      source: move.from,
+      auxiliary: (RODS.find((r) => r !== move.from && r !== move.to) ?? "B") as Rod,
+      target: move.to,
+      depth: Math.min(totalDisks, move.disk),
+      stage: "moving"
+    };
+
+    const trailingZeros = Math.max(0, move.disk - 1);
+    const binaryString = stepNum.toString(2).padStart(totalDisks, "0");
+    const grayCode = (stepNum ^ (stepNum >> 1)).toString(2).padStart(totalDisks, "0");
+    const prevGrayCode = ((stepNum - 1) ^ ((stepNum - 1) >> 1)).toString(2).padStart(totalDisks, "0");
+
+    const disk1Rod = currentRods.A.includes(1) ? "A" : currentRods.B.includes(1) ? "B" : "C";
+    const otherRods = RODS.filter((r) => r !== disk1Rod) as [Rod, Rod];
+
+    steps.push({
+      step: stepNum,
+      move: { ...move, moveIndex: stepNum, id: stepNum },
+      stack: [callFrame],
+      rods: cloneRods(currentRods),
+      activeCallId: callFrame.id,
+      explanation: move.explanation,
+      iterativeFrame: {
+        stepType: move.disk === 1 ? "odd" : "even",
+        disk1Rod,
+        disk1NextRod: getDisk1Next(disk1Rod),
+        disk1Cycle,
+        otherRods,
+        forcedMove: move.disk !== 1 ? { from: move.from, to: move.to, disk: move.disk } : null
+      },
+      binaryFrame: {
+        stepNumber: stepNum,
+        binaryString,
+        trailingZeros,
+        activeBitIndex: trailingZeros,
+        disk: move.disk,
+        grayCode,
+        prevGrayCode,
+        flippedBitIndex: trailingZeros
+      }
+    });
+  }
+
+  return steps;
+}
+
+
+/**
  * Reconstructs board state at any step index in O(steps) safely.
  */
 export function getBoardStateAtStep(
