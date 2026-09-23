@@ -219,15 +219,18 @@ export function Disk({
       aria-label={`${t("diskTooltip")} ${disk}`}
     >
       {/* Specular top-edge bevel highlight */}
-      <div className="absolute inset-x-2 top-0.5 h-[1.5px] rounded-full bg-white/40 pointer-events-none" />
+      <div className="absolute inset-x-2 top-0.5 h-[2px] rounded-full bg-white/55 pointer-events-none" />
+
+      {/* Bottom chamfer shadow shelf */}
+      <div className="absolute inset-x-0 bottom-0 h-1.5 rounded-b-lg bg-black/35 pointer-events-none" />
 
       {/* Tactile Center Peg Hole Ring */}
-      <div className="flex items-center justify-center gap-1.5 z-10">
-        <span
-          className="font-mono text-xs font-bold leading-none tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-        >
-          {disk}
-        </span>
+      <div className="flex items-center justify-center z-10">
+        <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/25 bg-black/40 shadow-inner">
+          <span className="font-mono text-xs font-bold leading-none tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+            {disk}
+          </span>
+        </div>
       </div>
     </motion.div>
   );
