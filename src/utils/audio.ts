@@ -9,7 +9,9 @@ class SoundManager {
   private getContext(): AudioContext | null {
     if (typeof window === "undefined") return null;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
       }
@@ -34,6 +36,31 @@ class SoundManager {
   }
 
   /**
+   * Crisp tactile mechanical arcade key press sound
+   */
+  public playClick() {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(600, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.035);
+
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.045);
+  }
+
+  /**
    * Crisp tactile wooden/metallic click when picking up a disk
    */
   public playPickup() {
@@ -45,8 +72,8 @@ class SoundManager {
     const gain = ctx.createGain();
 
     osc.type = "sine";
-    osc.frequency.setValueAtTime(420, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(680, ctx.currentTime + 0.06);
+    osc.frequency.setValueAtTime(360, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(620, ctx.currentTime + 0.06);
 
     gain.gain.setValueAtTime(0.12, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
@@ -59,29 +86,44 @@ class SoundManager {
   }
 
   /**
-   * Satisfying resonant thud when dropping a disk on a rod
+   * Satisfying resonant wooden impact when dropping a disk.
+   * Pitch is dynamically modulated by disk mass: larger disks produce deeper, heavier thuds.
    */
-  public playDrop(pitchMultiplier = 1) {
+  public playDrop(diskOrMultiplier: number = 1) {
     if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx) return;
 
+    // Determine base frequency: if disk number (1..8) is provided, larger disks are deeper
+    let baseFreq = 260;
+    if (diskOrMultiplier >= 1 && diskOrMultiplier <= 8 && Number.isInteger(diskOrMultiplier)) {
+      baseFreq = Math.max(120, 280 - diskOrMultiplier * 20);
+    } else {
+      baseFreq = 240 * diskOrMultiplier;
+    }
+
     const osc = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
     const gain = ctx.createGain();
 
-    const baseFreq = 260 * pitchMultiplier;
     osc.type = "triangle";
     osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, ctx.currentTime + 0.12);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.45, ctx.currentTime + 0.13);
 
-    gain.gain.setValueAtTime(0.18, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+    // Warm wooden acoustic resonance filter
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(850, ctx.currentTime);
+    filter.Q.setValueAtTime(3, ctx.currentTime);
 
-    osc.connect(gain);
+    gain.gain.setValueAtTime(0.22, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+    osc.connect(filter);
+    filter.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start();
-    osc.stop(ctx.currentTime + 0.15);
+    osc.stop(ctx.currentTime + 0.16);
   }
 
   /**
@@ -110,14 +152,14 @@ class SoundManager {
   }
 
   /**
-   * Harmonious victory fanfare chord upon solving the puzzle
+   * Harmonious ascending victory arpeggio upon solving the puzzle
    */
   public playVictory() {
     if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx) return;
 
-    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 987.77, 1046.5]; // C5, E5, G5, B5, C6
     notes.forEach((freq, index) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -127,14 +169,14 @@ class SoundManager {
       osc.frequency.setValueAtTime(freq, startTime);
 
       gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(0.12, startTime + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
+      gain.gain.linearRampToValueAtTime(0.14, startTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.7);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(startTime);
-      osc.stop(startTime + 0.65);
+      osc.stop(startTime + 0.75);
     });
   }
 }

@@ -7,10 +7,12 @@ import {
   RotateCcw,
   SkipBack,
   SkipForward,
-  Undo2
+  Undo2,
+  Gauge
 } from "lucide-react";
 import type { AlgorithmType, Rod } from "../types/hanoi";
 import { useLanguage } from "../i18n/LanguageContext";
+import { sound } from "../utils/audio";
 
 interface UnifiedControlsProps {
   // Manual game props
@@ -72,152 +74,194 @@ export function UnifiedControls({
   const isHint = message?.startsWith("Hint") || message?.startsWith("Gợi ý");
 
   return (
-    <section aria-label="Game and Solver Controls" className="rounded-2xl border border-white/[0.08] bg-[#0d0f15] p-4 shadow-xl space-y-3">
-      {/* Tier 1: Primary Action Triggers (Manual & Playback) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
-        {/* Left: Manual Play Actions */}
-        <div className="flex flex-wrap items-center gap-2">
+    <section
+      aria-label="Arcade Controls Deck"
+      className="rounded-2xl border border-white/[0.1] bg-[#0c1017] p-4 sm:p-5 shadow-2xl space-y-4 select-none"
+    >
+      {/* Top Deck: Dual-Bay Control Surface */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        {/* Left Bay (5 cols): Manual Game Tactical Controls */}
+        <div className="lg:col-span-5 flex flex-wrap items-center gap-2">
+          {/* Hint Key */}
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20 active:scale-95 disabled:opacity-40 whitespace-nowrap"
-            onClick={onHint}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-400/40 bg-gradient-to-b from-amber-500/20 to-amber-500/5 px-3.5 text-xs font-bold text-amber-300 shadow-md transition-all hover:brightness-125 hover:border-amber-400 active:translate-y-[2px] active:shadow-inner disabled:opacity-30 disabled:pointer-events-none"
+            onClick={() => {
+              sound.playClick();
+              onHint();
+            }}
             disabled={isSolved || isPlaying}
             type="button"
             title={t("hintTitle")}
           >
-            <Lightbulb size={14} />
+            <Lightbulb size={15} className="text-amber-400 animate-pulse" />
             <span>{t("hint")}</span>
           </button>
 
+          {/* Undo Key */}
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-200 transition hover:bg-white/[0.08] hover:text-white active:scale-95 disabled:opacity-40 whitespace-nowrap"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-white/[0.12] bg-gradient-to-b from-white/[0.08] to-white/[0.02] px-3.5 text-xs font-semibold text-slate-200 shadow-md transition-all hover:border-white/[0.25] hover:text-white active:translate-y-[2px] active:shadow-inner disabled:opacity-30 disabled:pointer-events-none"
             disabled={moveCount === 0 || isSolved || isPlaying}
-            onClick={onUndo}
+            onClick={() => {
+              sound.playClick();
+              onUndo();
+            }}
             type="button"
             title={t("undoTitle")}
           >
-            <Undo2 size={14} />
+            <Undo2 size={15} />
             <span>{t("undo")}</span>
           </button>
 
+          {/* Reset Key */}
           <button
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] px-3 text-xs font-medium text-slate-300 transition hover:bg-white/[0.08] hover:text-white active:scale-95 whitespace-nowrap"
-            onClick={onReset}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-500/30 bg-gradient-to-b from-rose-500/15 to-rose-500/5 px-3.5 text-xs font-semibold text-rose-300 shadow-md transition-all hover:border-rose-400 hover:text-rose-200 active:translate-y-[2px] active:shadow-inner"
+            onClick={() => {
+              sound.playClick();
+              onReset();
+            }}
             type="button"
             title={t("resetTitle")}
           >
-            <RotateCcw size={14} />
+            <RotateCcw size={15} />
             <span>{t("reset")}</span>
           </button>
         </div>
 
-        {/* Right: Auto-Solver Transport Playback Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Right Bay (7 cols): Autonomous Solver Transport Console */}
+        <div className="lg:col-span-7 flex flex-wrap items-center justify-start lg:justify-end gap-2">
+          {/* First Step */}
           <button
             aria-label={t("firstStep")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.12] bg-[#121824] text-slate-300 shadow-md transition hover:border-white/[0.25] hover:text-white active:translate-y-[2px] active:shadow-inner disabled:opacity-30 shrink-0"
             disabled={step === 0}
-            onClick={onFirst}
+            onClick={() => {
+              sound.playClick();
+              onFirst();
+            }}
             type="button"
             title={t("firstStep")}
           >
-            <FastForward className="rotate-180" size={14} />
+            <FastForward className="rotate-180" size={15} />
           </button>
 
+          {/* Previous Step */}
           <button
             aria-label={t("prevStep")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.12] bg-[#121824] text-slate-300 shadow-md transition hover:border-white/[0.25] hover:text-white active:translate-y-[2px] active:shadow-inner disabled:opacity-30 shrink-0"
             disabled={step === 0}
-            onClick={onPrevious}
+            onClick={() => {
+              sound.playClick();
+              onPrevious();
+            }}
             type="button"
             title={t("prevStep")}
           >
-            <SkipBack size={14} />
+            <SkipBack size={15} />
           </button>
 
-          {/* Auto Solve / Pause Play Button */}
+          {/* Play / Pause Giant Arcade Button */}
           <button
             aria-label={isPlaying ? t("pauseTitle") : t("autoSolveTitle")}
-            className={`inline-flex h-9 items-center gap-2 rounded-lg px-3.5 sm:px-4 text-xs font-bold transition shadow-md active:scale-95 whitespace-nowrap shrink-0 ${
+            className={`inline-flex h-10 items-center gap-2.5 rounded-xl px-5 text-xs font-black uppercase tracking-wider transition-all shadow-xl active:translate-y-[2px] active:shadow-inner whitespace-nowrap shrink-0 ${
               isPlaying
-                ? "bg-amber-500 text-slate-950 hover:bg-amber-400"
-                : "bg-white text-slate-950 hover:bg-slate-200"
+                ? "border border-amber-400 bg-gradient-to-b from-amber-400 to-amber-600 text-slate-950 shadow-amber-500/25 animate-pulse"
+                : "border border-emerald-400 bg-gradient-to-b from-emerald-400 to-emerald-600 text-slate-950 shadow-emerald-500/25 hover:brightness-110"
             }`}
-            onClick={onTogglePlay}
+            onClick={() => {
+              sound.playClick();
+              onTogglePlay();
+            }}
             type="button"
             title={isPlaying ? t("pauseTitle") : t("autoSolveTitle")}
           >
-            {isPlaying ? <Pause size={14} /> : <Play size={14} fill="currentColor" />}
+            {isPlaying ? <Pause size={16} /> : <Play size={16} fill="currentColor" />}
             <span>{isPlaying ? t("pause") : t("autoSolve")}</span>
           </button>
 
+          {/* Next Step */}
           <button
             aria-label={t("nextStep")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.12] bg-[#121824] text-slate-300 shadow-md transition hover:border-white/[0.25] hover:text-white active:translate-y-[2px] active:shadow-inner disabled:opacity-30 shrink-0"
             disabled={step === totalSteps}
-            onClick={onNext}
+            onClick={() => {
+              sound.playClick();
+              onNext();
+            }}
             type="button"
             title={t("nextStep")}
           >
-            <SkipForward size={14} />
+            <SkipForward size={15} />
           </button>
 
+          {/* Last Step */}
           <button
             aria-label={t("lastStep")}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-slate-300 transition hover:bg-white/[0.08] hover:text-white disabled:opacity-30 shrink-0"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.12] bg-[#121824] text-slate-300 shadow-md transition hover:border-white/[0.25] hover:text-white active:translate-y-[2px] active:shadow-inner disabled:opacity-30 shrink-0"
             disabled={step === totalSteps}
-            onClick={onLast}
+            onClick={() => {
+              sound.playClick();
+              onLast();
+            }}
             type="button"
             title={t("lastStep")}
           >
-            <FastForward size={14} />
+            <FastForward size={15} />
           </button>
         </div>
       </div>
 
-      {/* Tier 2: Algorithm Selector, Status Prompt & Simulation Speed */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        {/* Algorithm selector pills */}
-        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.02] p-1">
-          <Cpu size={14} className="text-amber-400 ml-1.5 mr-0.5 shrink-0" />
+      {/* Bottom Deck: Algorithm Selector, Speed Multiplier & Status Diode */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.08] text-xs">
+        {/* Algorithm Segment Selector */}
+        <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.1] bg-[#090d14] p-1 shadow-inner">
+          <div className="flex items-center gap-1.5 px-2 text-slate-400 font-mono text-[11px]">
+            <Cpu size={14} className="text-amber-400" />
+            <span className="hidden sm:inline">Thuật toán:</span>
+          </div>
           {algorithmsList.map((algo) => (
             <button
               key={algo.id}
               type="button"
-              onClick={() => onAlgorithmChange(algo.id)}
+              onClick={() => {
+                sound.playClick();
+                onAlgorithmChange(algo.id);
+              }}
               title={algo.desc}
-              className={`rounded px-2.5 py-1 text-xs font-medium transition whitespace-nowrap ${
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 algorithm === algo.id
-                  ? "bg-amber-400/20 text-amber-300 font-semibold shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 border border-transparent"
               }`}
             >
-              {algo.label}
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  algorithm === algo.id ? "bg-amber-400 animate-ping" : "bg-slate-600"
+                }`}
+              />
+              <span>{algo.label}</span>
             </button>
           ))}
         </div>
 
-        {/* Dynamic status hint */}
-        <span className="hidden md:inline text-xs text-slate-400">
-          {isSolved
-            ? t("statusSolved")
-            : selectedRod
-            ? t("statusSelected", { rod: selectedRod })
-            : t("statusIdle")}
-        </span>
-
-        {/* Speed Selector */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-slate-400 text-[11px] whitespace-nowrap">{t("speed")}</span>
-          <div className="flex items-center rounded-lg border border-white/[0.08] bg-white/[0.02] p-0.5">
+        {/* Speed Multiplier Segment */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 text-slate-400 font-mono text-[11px]">
+            <Gauge size={14} className="text-emerald-400" />
+            <span>{t("speed")}:</span>
+          </div>
+          <div className="flex items-center rounded-xl border border-white/[0.1] bg-[#090d14] p-1 shadow-inner">
             {SPEED_OPTIONS.map((spd) => (
               <button
                 key={spd}
                 type="button"
-                onClick={() => onSpeedChange(spd)}
-                className={`rounded px-2 py-0.5 text-[11px] font-mono transition ${
+                onClick={() => {
+                  sound.playClick();
+                  onSpeedChange(spd);
+                }}
+                className={`rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold transition ${
                   speed === spd
-                    ? "bg-white/10 text-white font-bold"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm"
+                    : "text-slate-400 hover:text-slate-200 border border-transparent"
                 }`}
               >
                 {spd}x
@@ -227,22 +271,28 @@ export function UnifiedControls({
         </div>
       </div>
 
-      {/* Message notification if any */}
+      {/* Interactive Status / Error Notice */}
       {message && (
         <div
           aria-live="polite"
-          className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+          className={`rounded-xl px-4 py-2.5 text-xs font-medium border shadow-lg transition-all animate-fadeIn ${
             isError
-              ? "border border-rose-500/30 bg-rose-500/10 text-rose-300"
+              ? "border-rose-500/40 bg-rose-500/15 text-rose-300"
               : isHint
-              ? "border border-amber-400/30 bg-amber-400/10 text-amber-200 font-semibold"
-              : "border border-sky-400/30 bg-sky-400/10 text-sky-200"
+              ? "border-amber-400/40 bg-amber-400/15 text-amber-200 font-semibold"
+              : "border-sky-400/40 bg-sky-400/15 text-sky-200"
           }`}
         >
           {message}
         </div>
       )}
+
+      {/* In-play Status prompt */}
+      {!message && selectedRod && (
+        <div className="rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-xs text-sky-200 font-medium">
+          {t("statusSelected", { rod: selectedRod })}
+        </div>
+      )}
     </section>
   );
 }
-
