@@ -268,6 +268,12 @@ function VisualizerApp() {
               }
               activeStack={activeSource === "simulation" ? sim.activeStack : []}
               stepExplanation={stepExplanation}
+              currentStep={currentMove}
+              totalSteps={sim.totalSteps}
+              onSelectStep={(step) => {
+                setActiveSource("simulation");
+                sim.goToStep(step);
+              }}
             />
           </div>
           <div className="lg:col-span-5">

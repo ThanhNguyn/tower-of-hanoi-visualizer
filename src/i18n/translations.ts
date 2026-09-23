@@ -99,6 +99,8 @@ export interface TranslationDictionary {
   depthLabel: string;
   moveNumber: string;
   traceDefaultPrompt: string;
+  treeClickPrompt: string;
+  treeSubtreeNotice: string;
   branchingModelTitle: string;
   step1Left: string;
   step1LeftDesc: string;
@@ -286,6 +288,8 @@ export const translations: Record<Locale, TranslationDictionary> = {
     depthLabel: "Độ sâu {depth}",
     moveNumber: "Bước #{moveIndex}: Đĩa {disk} ({from} → {to})",
     traceDefaultPrompt: "Bắt đầu mô phỏng tự động để theo dõi quá trình phân rã đệ quy theo thời gian thực.",
+    treeClickPrompt: "Nhấp vào bất kỳ nút nào trên cây để tua đến bước tương ứng.",
+    treeSubtreeNotice: "Hiển thị cây đệ quy N={n} (thu gọn từ N={total} để tối ưu góc nhìn).",
     branchingModelTitle: "Mô hình Phân nhánh Đệ quy",
     step1Left: "Bước 1 (Trái)",
     step1LeftDesc: "Chuyển n-1 sang Cọc phụ",
@@ -471,6 +475,8 @@ export const translations: Record<Locale, TranslationDictionary> = {
     depthLabel: "Depth {depth}",
     moveNumber: "Move #{moveIndex}: Disk {disk} ({from} → {to})",
     traceDefaultPrompt: "Start the solver to trace the recursive decomposition in real-time.",
+    treeClickPrompt: "Click any node on the tree to jump directly to that step.",
+    treeSubtreeNotice: "Displaying N={n} tree view (compacted from total N={total} for optimal layout).",
     branchingModelTitle: "Recursive Branching Model",
     step1Left: "Step 1 (Left)",
     step1LeftDesc: "Move n-1 to Aux",
