@@ -101,12 +101,15 @@ describe("Tower of Hanoi Multi-Algorithm Suite & Game Engine", () => {
     const trace = generateExecutionTrace(n);
     expect(trace.length).toBe(Math.pow(2, n));
 
-    for (let i = 1; i < trace.length; i++) {
+    // In-flight recursive steps maintain active stack frames
+    for (let i = 1; i < trace.length - 1; i++) {
       const step = trace[i];
       expect(step.move).not.toBeNull();
       expect(step.stack.length).toBeGreaterThan(0);
       expect(step.stack.length).toBeLessThanOrEqual(n);
     }
+    // Final completed step unwinds to empty stack
+    expect(trace[trace.length - 1].stack.length).toBe(0);
   });
 
   it("accurately computes minimum remaining moves to target peg C for completion progress", () => {
@@ -136,4 +139,15 @@ describe("Tower of Hanoi Multi-Algorithm Suite & Game Engine", () => {
       expect(getMinMovesToTarget(curRods, n, "C")).toBe(15 - (i + 1));
     }
   });
+
+  it("unwinds call stack to 0 frames when puzzle reaches completion step", () => {
+    const n = 4;
+    const trace = generateExecutionTrace(n);
+    const totalMoves = Math.pow(2, n) - 1;
+    const lastStep = trace[totalMoves];
+    expect(lastStep).toBeDefined();
+    expect(isPuzzleSolved(lastStep.rods, n, "C")).toBe(true);
+    expect(lastStep.stack.length).toBe(0);
+  });
 });
+

@@ -404,6 +404,14 @@ export function generateExecutionTrace(n: number, target: Rod = "C"): ExecutionS
   }
 
   runTrace(n, "A", aux, target, "hanoi", 1);
+
+  // Unwind the call stack on completion step
+  if (steps.length > 1) {
+    const finalStep = steps[steps.length - 1];
+    finalStep.stack = [];
+    finalStep.explanation = `Completed! Successfully transferred all ${n} disks to Rod ${target}. All recursive calls returned.`;
+  }
+
   return steps;
 }
 
