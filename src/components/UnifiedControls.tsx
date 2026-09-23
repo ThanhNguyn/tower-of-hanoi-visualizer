@@ -216,7 +216,7 @@ export function UnifiedControls({
         <div className="flex flex-wrap items-center gap-1 rounded-xl border border-white/[0.1] bg-[#090d14] p-1 shadow-inner">
           <div className="flex items-center gap-1.5 px-2 text-slate-400 font-mono text-[11px]">
             <Cpu size={14} className="text-amber-400" />
-            <span className="hidden sm:inline">Thuật toán:</span>
+            <span className="hidden sm:inline">{t("algorithmLabel")}</span>
           </div>
           {algorithmsList.map((algo) => (
             <button

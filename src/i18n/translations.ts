@@ -12,6 +12,21 @@ export interface TranslationDictionary {
   resetTitle: string;
   language: string;
 
+  // View mode & 3D controls
+  viewMode3DTitle: string;
+  viewMode2DTitle: string;
+  viewMode3DLabel: string;
+  viewMode2DLabel: string;
+  badgeVersion: string;
+  cameraIsometricTitle: string;
+  cameraFrontTitle: string;
+  cameraTopTitle: string;
+  cameraIsometric: string;
+  cameraFront: string;
+  cameraTop: string;
+  algorithmLabel: string;
+  stackTop: string;
+
   // Global Shortcuts Bar
   disks: string;
   chooseDisks: string;
@@ -89,6 +104,8 @@ export interface TranslationDictionary {
   depth: string;
   stackEmpty: string;
   callStackExplanation: string;
+  stackCompletedBadge: string;
+  stackUnwoundPrompt: string;
 
   // Recursive Visualizer
   traceTreeTitle: string;
@@ -101,6 +118,13 @@ export interface TranslationDictionary {
   traceDefaultPrompt: string;
   treeClickPrompt: string;
   treeSubtreeNotice: string;
+  treeZoomIn: string;
+  treeZoomOut: string;
+  treeResetZoom: string;
+  treeLegendCompleted: string;
+  treeLegendActive: string;
+  treeLegendPending: string;
+  treeStepDisk: string;
   branchingModelTitle: string;
   step1Left: string;
   step1LeftDesc: string;
@@ -198,8 +222,23 @@ export const translations: Record<Locale, TranslationDictionary> = {
     soundMute: "Tắt âm thanh",
     soundUnmute: "Bật âm thanh",
     reset: "Đặt lại",
-    resetTitle: "Đặt lại bàn cờ về vị trí ban đầu (Phím R)",
+    resetTitle: "Đặt lại câu đố về trạng thái ban đầu (Phím R)",
     language: "Ngôn ngữ",
+
+    // View mode & 3D controls
+    viewMode3DTitle: "Bàn cờ 3D WebGL Siêu thực (Three.js)",
+    viewMode2DTitle: "Bàn cờ 2D Xúc giác Cổ điển (DOM)",
+    viewMode3DLabel: "3D Studio",
+    viewMode2DLabel: "2D Cổ điển",
+    badgeVersion: "v2.0 3D Xúc giác",
+    cameraIsometricTitle: "Góc nhìn phối cảnh 3D Isometric",
+    cameraFrontTitle: "Góc nhìn chính diện 3D Front",
+    cameraTopTitle: "Góc nhìn từ trên xuống Top-Down",
+    cameraIsometric: "Phối cảnh",
+    cameraFront: "Chính diện",
+    cameraTop: "Trên xuống",
+    algorithmLabel: "Thuật toán:",
+    stackTop: "ĐỈNH",
 
     // Global Shortcuts Bar
     disks: "Số đĩa:",
@@ -278,6 +317,8 @@ export const translations: Record<Locale, TranslationDictionary> = {
     depth: "Độ sâu:",
     stackEmpty: "Ngăn xếp trống (Mô phỏng sẵn sàng hoặc đã hoàn tất)",
     callStackExplanation: "Mỗi lần gọi đệ quy sẽ đẩy (push) một khung tham số (n, nguồn, phụ, đích). Khi bước cơ sở hoàn tất, khung sẽ được lấy ra (pop).",
+    stackCompletedBadge: "✓ Hoàn tất",
+    stackUnwoundPrompt: "Ngăn xếp đã mở rỗng (Stack empty)",
 
     // Recursive Visualizer
     traceTreeTitle: "Cây & Dấu vết đệ quy",
@@ -290,6 +331,13 @@ export const translations: Record<Locale, TranslationDictionary> = {
     traceDefaultPrompt: "Bắt đầu mô phỏng tự động để theo dõi quá trình phân rã đệ quy theo thời gian thực.",
     treeClickPrompt: "Nhấp vào bất kỳ nút nào trên cây để tua đến bước tương ứng.",
     treeSubtreeNotice: "Hiển thị cây đệ quy N={n} (thu gọn từ N={total} để tối ưu góc nhìn).",
+    treeZoomIn: "Phóng to cây",
+    treeZoomOut: "Thu nhỏ cây",
+    treeResetZoom: "Đặt lại thu phóng",
+    treeLegendCompleted: "Đã hoàn thành",
+    treeLegendActive: "Đang thực thi",
+    treeLegendPending: "Chờ duyệt",
+    treeStepDisk: "Bước #{step}: Đĩa {disk} ({from} → {to})",
     branchingModelTitle: "Mô hình Phân nhánh Đệ quy",
     step1Left: "Bước 1 (Trái)",
     step1LeftDesc: "Chuyển n-1 sang Cọc phụ",
@@ -385,8 +433,23 @@ export const translations: Record<Locale, TranslationDictionary> = {
     soundMute: "Mute audio",
     soundUnmute: "Unmute audio",
     reset: "Reset",
-    resetTitle: "Reset board to starting configuration (R)",
+    resetTitle: "Reset puzzle to initial state (Shortcut: R)",
     language: "Language",
+
+    // View mode & 3D controls
+    viewMode3DTitle: "Hyper-realistic 3D WebGL Studio (Three.js)",
+    viewMode2DTitle: "Classic 2D Tactile Board (DOM)",
+    viewMode3DLabel: "3D Studio",
+    viewMode2DLabel: "2D Classic",
+    badgeVersion: "v2.0 3D Tactile",
+    cameraIsometricTitle: "3D Isometric Perspective View",
+    cameraFrontTitle: "3D Front View",
+    cameraTopTitle: "Top-Down View",
+    cameraIsometric: "Isometric",
+    cameraFront: "Front",
+    cameraTop: "Top",
+    algorithmLabel: "Algorithm:",
+    stackTop: "TOP",
 
     // Global Shortcuts Bar
     disks: "Disks:",
@@ -465,6 +528,8 @@ export const translations: Record<Locale, TranslationDictionary> = {
     depth: "Depth:",
     stackEmpty: "Stack is empty (Simulation ready or completed)",
     callStackExplanation: "Each call pushes a frame with parameters (n, src, aux, dst). Returns pop the frame when base case moves complete.",
+    stackCompletedBadge: "✓ Completed",
+    stackUnwoundPrompt: "Call stack is unwound (Stack empty)",
 
     // Recursive Visualizer
     traceTreeTitle: "Recursive Trace & Tree",
@@ -477,6 +542,13 @@ export const translations: Record<Locale, TranslationDictionary> = {
     traceDefaultPrompt: "Start the solver to trace the recursive decomposition in real-time.",
     treeClickPrompt: "Click any node on the tree to jump directly to that step.",
     treeSubtreeNotice: "Displaying N={n} tree view (compacted from total N={total} for optimal layout).",
+    treeZoomIn: "Zoom in tree",
+    treeZoomOut: "Zoom out tree",
+    treeResetZoom: "Reset zoom",
+    treeLegendCompleted: "Completed",
+    treeLegendActive: "Active step",
+    treeLegendPending: "Pending",
+    treeStepDisk: "Step #{step}: Disk {disk} ({from} → {to})",
     branchingModelTitle: "Recursive Branching Model",
     step1Left: "Step 1 (Left)",
     step1LeftDesc: "Move n-1 to Aux",

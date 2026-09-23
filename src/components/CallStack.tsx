@@ -64,7 +64,7 @@ export function CallStack({ stack, maxDepth }: CallStackProps) {
                   <div className="flex items-center gap-1.5">
                     {isTop && (
                       <span className="rounded bg-copper-400/20 px-1.5 py-0.5 text-[10px] font-semibold text-copper-300">
-                        TOP
+                        {t("stackTop")}
                       </span>
                     )}
                     <span className="text-[10px] text-slate-500">d:{frame.depth}</span>

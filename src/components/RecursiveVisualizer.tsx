@@ -49,7 +49,7 @@ export function RecursiveVisualizer({
                 {t("depthLabel", { depth: currentTopFrame.depth })}
               </span>
             ) : (
-              <span className="text-emerald-400 font-medium">✓ Hoàn tất</span>
+              <span className="text-emerald-400 font-medium">{t("stackCompletedBadge")}</span>
             )}
           </div>
 
@@ -59,7 +59,7 @@ export function RecursiveVisualizer({
                 hanoi({currentTopFrame.n}, {currentTopFrame.source}, {currentTopFrame.auxiliary}, {currentTopFrame.target})
               </code>
             ) : (
-              <span className="text-xs text-slate-400 italic">Ngăn xếp đã mở rỗng (Stack empty)</span>
+              <span className="text-xs text-slate-400 italic">{t("stackUnwoundPrompt")}</span>
             )}
             {activeMove && (
               <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">

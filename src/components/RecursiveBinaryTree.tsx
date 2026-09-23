@@ -170,8 +170,8 @@ export function RecursiveBinaryTree({
             </h3>
             <p className="text-[11px] text-slate-400">
               {diskCount > 5
-                ? t("treeSubtreeNotice", { n: maxDisplayN, total: diskCount }) || `Hiển thị cấu trúc cây nhị phân (tối đa n=5 để tối ưu tầm nhìn)`
-                : t("treeClickPrompt") || `Click vào bất kỳ nút nào để tua đến bước tương ứng`}
+                ? t("treeSubtreeNotice", { n: maxDisplayN, total: diskCount })
+                : t("treeClickPrompt")}
             </p>
           </div>
         </div>
@@ -182,7 +182,7 @@ export function RecursiveBinaryTree({
             type="button"
             onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] transition"
-            title="Thu nhỏ cây"
+            title={t("treeZoomOut")}
           >
             <ZoomOut size={13} />
           </button>
@@ -193,7 +193,7 @@ export function RecursiveBinaryTree({
             type="button"
             onClick={() => setZoom((z) => Math.min(1.8, z + 0.15))}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] transition"
-            title="Phóng to cây"
+            title={t("treeZoomIn")}
           >
             <ZoomIn size={13} />
           </button>
@@ -201,7 +201,7 @@ export function RecursiveBinaryTree({
             type="button"
             onClick={() => setZoom(1)}
             className="flex h-7 w-7 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] transition"
-            title="Đặt lại zoom"
+            title={t("treeResetZoom")}
           >
             <RotateCcw size={13} />
           </button>
@@ -215,7 +215,12 @@ export function RecursiveBinaryTree({
           {activeNode ? (
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping" />
-              Bước #{activeNode.step}: Đĩa {activeNode.disk} ({activeNode.from} → {activeNode.to})
+              {t("treeStepDisk", {
+                step: activeNode.step,
+                disk: activeNode.disk,
+                from: activeNode.from,
+                to: activeNode.to
+              })}
             </span>
           ) : (
             <span className="text-slate-400 italic">{t("idle")}</span>
@@ -224,15 +229,15 @@ export function RecursiveBinaryTree({
         <div className="flex items-center gap-3 text-[11px] text-slate-400">
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            <span>Đã hoàn thành</span>
+            <span>{t("treeLegendCompleted")}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            <span>Đang thực thi</span>
+            <span>{t("treeLegendActive")}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-slate-600" />
-            <span>Chờ duyệt</span>
+            <span>{t("treeLegendPending")}</span>
           </div>
         </div>
       </div>

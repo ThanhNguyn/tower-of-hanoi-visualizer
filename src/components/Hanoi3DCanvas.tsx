@@ -584,10 +584,10 @@ export function Hanoi3DCanvas({
               ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
-          title="Góc nhìn phối cảnh 3D Isometric"
+          title={t("cameraIsometricTitle")}
         >
           <Camera size={13} />
-          <span>Isometric</span>
+          <span>{t("cameraIsometric")}</span>
         </button>
 
         <button
@@ -598,10 +598,10 @@ export function Hanoi3DCanvas({
               ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
-          title="Góc nhìn chính diện 3D Front"
+          title={t("cameraFrontTitle")}
         >
           <Eye size={13} />
-          <span>Front</span>
+          <span>{t("cameraFront")}</span>
         </button>
 
         <button
@@ -612,10 +612,10 @@ export function Hanoi3DCanvas({
               ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
               : "text-slate-400 hover:text-slate-200"
           }`}
-          title="Góc nhìn từ trên xuống Top-Down"
+          title={t("cameraTopTitle")}
         >
           <Layers size={13} />
-          <span>Top</span>
+          <span>{t("cameraTop")}</span>
         </button>
       </div>
 

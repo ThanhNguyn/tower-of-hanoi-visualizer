@@ -30,7 +30,7 @@ export function Header({
           <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl flex items-center gap-2">
             <span>{t("appTitle")}</span>
             <span className="rounded-full bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-300">
-              v2.0 3D Tactile
+              {t("badgeVersion")}
             </span>
           </h1>
           <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
@@ -57,10 +57,10 @@ export function Header({
                 ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200 border border-transparent"
             }`}
-            title="Bàn cờ 3D WebGL Siêu thực (Three.js)"
+            title={t("viewMode3DTitle")}
           >
             <Box size={14} className={viewMode === "3d" ? "text-amber-400" : "text-slate-500"} />
-            <span>3D Studio</span>
+            <span>{t("viewMode3DLabel")}</span>
           </button>
 
           <button
@@ -74,10 +74,10 @@ export function Header({
                 ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                 : "text-slate-400 hover:text-slate-200 border border-transparent"
             }`}
-            title="Bàn cờ 2D Xúc giác Cổ điển (DOM)"
+            title={t("viewMode2DTitle")}
           >
             <Square size={14} className={viewMode === "2d" ? "text-amber-400" : "text-slate-500"} />
-            <span>2D Classic</span>
+            <span>{t("viewMode2DLabel")}</span>
           </button>
         </div>
 
