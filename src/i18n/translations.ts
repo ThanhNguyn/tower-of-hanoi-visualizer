@@ -159,6 +159,10 @@ export interface TranslationDictionary {
   iterativeTitle: string;
   iterativeDesc: string;
   iterativePatternTitle: string;
+  iterativeOddLabel: string;
+  iterativeEvenLabel: string;
+  iterativeCycleEven: string;
+  iterativeCycleOdd: string;
   iterativeOddStep: string;
   iterativeEvenStep: string;
   iterativeConclusion: string;
@@ -166,6 +170,7 @@ export interface TranslationDictionary {
   // Deep-Dive Binary
   binaryTitle: string;
   binaryDesc: string;
+  binaryStepDisk: string;
   binaryExplanation: string;
 
   // Deep-Dive Math
@@ -177,6 +182,7 @@ export interface TranslationDictionary {
   recursiveSpace: string;
   iterativeSpace: string;
   movesForNDisks: string;
+  stepUnit: string;
 
   // Rules Modal
   modalTitle: string;
@@ -372,13 +378,18 @@ export const translations: Record<Locale, TranslationDictionary> = {
     iterativeTitle: "Thuật toán Lặp không dùng ngăn xếp (Máy trạng thái)",
     iterativeDesc: "Với số đĩa lớn, ngăn xếp đệ quy sâu có nguy cơ tràn bộ nhớ (Stack Overflow). Thuật toán lặp giải quyết bài toán chỉ với bộ nhớ phụ O(1) nhờ quy luật chẵn lẻ luân phiên:",
     iterativePatternTitle: "Quy luật 2 bước luân phiên:",
-    iterativeOddStep: "Lượt lẻ (1, 3, 5,...): Luôn di chuyển Đĩa 1 (đĩa nhỏ nhất) sang cọc kế tiếp theo chu trình cố định:",
-    iterativeEvenStep: "Lượt chẵn (2, 4, 6,...): Luôn chỉ có DUY NHẤT một nước đi hợp lệ giữa hai cọc không chứa Đĩa 1 (đặt đĩa nhỏ hơn lên đĩa lớn hơn).",
+    iterativeOddLabel: "Lượt lẻ (1, 3, 5, ...):",
+    iterativeEvenLabel: "Lượt chẵn (2, 4, 6, ...):",
+    iterativeCycleEven: "A → B → C → A (N chẵn)",
+    iterativeCycleOdd: "A → C → B → A (N lẻ)",
+    iterativeOddStep: "Luôn di chuyển Đĩa 1 (đĩa nhỏ nhất) sang cọc kế tiếp theo chu trình cố định:",
+    iterativeEvenStep: "Luôn chỉ có DUY NHẤT một nước đi hợp lệ giữa hai cọc không chứa Đĩa 1 (đặt đĩa nhỏ hơn lên đĩa lớn hơn).",
     iterativeConclusion: "Lặp lại hai quy tắc tất định này sẽ mang lại đúng chuỗi nước đi tối ưu tối thiểu mà không cần duy trì call stack!",
 
     // Deep-Dive Binary
     binaryTitle: "Mã Gray Nhị phân & Đếm Bit phần cứng",
     binaryDesc: "Bài toán Tháp Hà Nội đẳng cấu với phép đếm nhị phân và mã Gray đối xứng. Đếm từ 1 đến 2ⁿ - 1 dưới dạng nhị phân:",
+    binaryStepDisk: "Chuyển Đĩa {disk}",
     binaryExplanation: "Ở mỗi bước k, đĩa cần di chuyển chính là vị trí của bit 1 có trọng số nhỏ nhất (Trailing Zeros): ctz(k) + 1. Thao tác này được tính toán trong O(1) chỉ với 1 lệnh CPU phần cứng!",
 
     // Deep-Dive Math
@@ -390,6 +401,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     recursiveSpace: "Bộ nhớ phụ (Đệ quy):",
     iterativeSpace: "Bộ nhớ phụ (Thuật toán lặp):",
     movesForNDisks: "Với N = {count} đĩa:",
+    stepUnit: "bước",
 
     // Rules Modal
     modalTitle: "Luật chơi & Hướng dẫn Tháp Hà Nội",
@@ -583,13 +595,18 @@ export const translations: Record<Locale, TranslationDictionary> = {
     iterativeTitle: "Stackless Iterative Algorithm (State Machine)",
     iterativeDesc: "For large disk counts, recursive depth risks stack overflow. The iterative approach solves Tower of Hanoi with O(1) auxiliary space via alternating parity:",
     iterativePatternTitle: "Alternating 2-Step Pattern:",
-    iterativeOddStep: "Odd Turns (1, 3, 5, ...): Always cycle Disk 1 (smallest) to the next rod along its fixed rotational cycle:",
-    iterativeEvenStep: "Even Turns (2, 4, 6, ...): There is always exactly ONE legal move between the two rods that do not contain Disk 1 (place the smaller disk onto the larger disk).",
+    iterativeOddLabel: "Odd Turns (1, 3, 5, ...):",
+    iterativeEvenLabel: "Even Turns (2, 4, 6, ...):",
+    iterativeCycleEven: "A → B → C → A (even N)",
+    iterativeCycleOdd: "A → C → B → A (odd N)",
+    iterativeOddStep: "Always cycle Disk 1 (smallest) to the next rod along its fixed rotational cycle:",
+    iterativeEvenStep: "There is always exactly ONE legal move between the two rods that do not contain Disk 1 (place the smaller disk onto the larger disk).",
     iterativeConclusion: "Repeating these two deterministic rules yields the exact minimal optimal solution without maintaining any call stack!",
 
     // Deep-Dive Binary
     binaryTitle: "Binary Gray Code & Bitwise Counters",
     binaryDesc: "The Tower of Hanoi is isomorphic to binary counting and reflected binary Gray codes. Counting from 1 to 2ⁿ - 1 in binary:",
+    binaryStepDisk: "Move Disk {disk}",
     binaryExplanation: "At any step k, the disk to move is determined by the lowest 1-bit index: ctz(k) + 1. This can be computed in O(1) hardware instructions!",
 
     // Deep-Dive Math
@@ -601,6 +618,7 @@ export const translations: Record<Locale, TranslationDictionary> = {
     recursiveSpace: "Recursive Space:",
     iterativeSpace: "Iterative Space:",
     movesForNDisks: "N = {count} disks:",
+    stepUnit: "moves",
 
     // Rules Modal
     modalTitle: "Tower of Hanoi Rules & Guide",

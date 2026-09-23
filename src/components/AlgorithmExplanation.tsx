@@ -7,7 +7,7 @@ interface AlgorithmExplanationProps {
 }
 
 export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps) {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"recursive" | "iterative" | "binary">("recursive");
   const minMoves = Math.pow(2, currentDisks) - 1;
 
@@ -121,16 +121,16 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
                 <div className="font-semibold text-copper-300">{t("iterativePatternTitle")}</div>
                 <ul className="list-disc list-inside space-y-1.5 pl-1">
                   <li>
-                    <strong>{locale === "vi" ? "Lượt lẻ (1, 3, 5, ...):" : "Odd Turns (1, 3, 5, ...):"}</strong> {t("iterativeOddStep")}
+                    <strong>{t("iterativeOddLabel")}</strong> {t("iterativeOddStep")}
                     <br />
                     <span className="font-mono text-copper-300 pl-4">
                       {currentDisks % 2 === 0
-                        ? (locale === "vi" ? "A → B → C → A (N chẵn)" : "A → B → C → A (even N)")
-                        : (locale === "vi" ? "A → C → B → A (N lẻ)" : "A → C → B → A (odd N)")}
+                        ? t("iterativeCycleEven")
+                        : t("iterativeCycleOdd")}
                     </span>
                   </li>
                   <li>
-                    <strong>{locale === "vi" ? "Lượt chẵn (2, 4, 6, ...):" : "Even Turns (2, 4, 6, ...):"}</strong> {t("iterativeEvenStep")}
+                    <strong>{t("iterativeEvenLabel")}</strong> {t("iterativeEvenStep")}
                   </li>
                 </ul>
               </div>
@@ -150,10 +150,10 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
                 {t("binaryDesc")}
               </p>
               <div className="rounded-xl border border-white/[0.08] bg-black/30 p-4 space-y-2 text-xs text-slate-300 font-mono">
-                <div>Step 1 = 001₂ → Trailing zeros = 0 → {locale === "vi" ? "Chuyển Đĩa 1" : "Move Disk 1"}</div>
-                <div>Step 2 = 010₂ → Trailing zeros = 1 → {locale === "vi" ? "Chuyển Đĩa 2" : "Move Disk 2"}</div>
-                <div>Step 3 = 011₂ → Trailing zeros = 0 → {locale === "vi" ? "Chuyển Đĩa 1" : "Move Disk 1"}</div>
-                <div>Step 4 = 100₂ → Trailing zeros = 2 → {locale === "vi" ? "Chuyển Đĩa 3" : "Move Disk 3"}</div>
+                <div>Step 1 = 001₂ → Trailing zeros = 0 → {t("binaryStepDisk", { disk: 1 })}</div>
+                <div>Step 2 = 010₂ → Trailing zeros = 1 → {t("binaryStepDisk", { disk: 2 })}</div>
+                <div>Step 3 = 011₂ → Trailing zeros = 0 → {t("binaryStepDisk", { disk: 1 })}</div>
+                <div>Step 4 = 100₂ → Trailing zeros = 2 → {t("binaryStepDisk", { disk: 3 })}</div>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
                 {t("binaryExplanation")}
@@ -204,7 +204,7 @@ export function AlgorithmExplanation({ currentDisks }: AlgorithmExplanationProps
               </div>
               <div className="flex justify-between pt-0.5">
                 <span className="text-slate-300">{t("movesForNDisks", { count: currentDisks })}</span>
-                <span className="text-white font-bold">{minMoves} {locale === "vi" ? "bước" : "moves"}</span>
+                <span className="text-white font-bold">{minMoves} {t("stepUnit")}</span>
               </div>
             </div>
           </div>
